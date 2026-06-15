@@ -137,12 +137,12 @@
         }
 
         .img-meme {
-            width: 130px;
+            width: 160px;
             height: auto;
             margin-top: 20px;
             border-radius: 10px;
         }
-    </script>
+    </style>
 </head>
 <body>
 
@@ -158,7 +158,7 @@
 
     <script>
         let nomeSalvo = "";
-        let faseAtual = 1;
+        let faseAtual = 0; 
         let cliquesNoNao = 0;
 
         const mensagensNao = [
@@ -174,7 +174,6 @@
             const msgValidacao = document.getElementById('msgValidacao');
             const textoNome = input.value.trim();
 
-            // Expressão Regular: Permite apenas letras de A a Z (com acentos) e espaços
             const apenasLetras = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
 
             if (textoNome === "") {
@@ -191,6 +190,7 @@
 
             msgValidacao.style.display = "none";
             nomeSalvo = textoNome;
+            faseAtual = 1; 
             atualizarTela();
         }
 
@@ -245,7 +245,7 @@
 
             if (cliquesNoNao <= 5) {
                 msgSub.innerText = mensagensNao[cliquesNoNao - 1];
-                msgSub.className = "erro-sistema"; // Aplica a classe de cor vermelha
+                msgSub.className = "erro-sistema";
             }
 
             if (cliquesNoNao === 6) {
@@ -257,14 +257,13 @@
         function telaVitoria() {
             const card = document.getElementById('interfaceCard');
             card.innerHTML = `
-                <h2>Vamos marcar nosso encontro! 😏</h2>
+                <h2>Vamos marcar nosso encontro! 😊</h2>
                 <a href="https://instagram.com" target="_blank" class="link-direct">Me chama no direct</a>
                 <div style="margin-top: 20px; font-size: 20px; font-weight: bold; color: #1a1a1a;">oii, ${nomeSalvo}</div>
-                <img src="https://emojiisland.com" class="img-meme" alt="Meme Rosa">
+                <img src="https://uncyc.org" class="img-meme" alt="Emoji com Rosa">
             `;
         }
     </script>
 
 </body>
-            </html>
-        
+</html>
