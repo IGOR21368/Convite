@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desse jeito até eu iria</title>
+    <title>Convite Especial</title>
     <style>
         * {
             box-sizing: border-box;
@@ -22,16 +22,6 @@
             padding: 20px;
         }
 
-        .titulo-topo {
-            font-size: 28px;
-            font-weight: 800;
-            color: #000000;
-            text-align: center;
-            margin-bottom: 40px;
-            max-width: 90%;
-            line-height: 1.3;
-        }
-
         .card {
             background: #ffffff;
             padding: 40px 30px;
@@ -41,7 +31,7 @@
             text-align: center;
             max-width: 400px;
             width: 100%;
-            min-height: 250px;
+            min-height: 280px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -59,6 +49,12 @@
             font-size: 16px;
             color: #777777;
             margin-bottom: 30px;
+            transition: color 0.2s ease;
+        }
+
+        p.erro-sistema {
+            color: #dc3545;
+            font-weight: bold;
         }
 
         .input-nome {
@@ -68,8 +64,16 @@
             border: 1px solid #e0e0e0;
             border-radius: 10px;
             outline: none;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-align: center;
+        }
+
+        .msg-validacao {
+            color: #dc3545;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            display: none;
         }
 
         .container-botoes {
@@ -84,7 +88,6 @@
             justify-content: center;
             gap: 15px;
             position: relative;
-            min-height: 50px;
         }
 
         button {
@@ -98,10 +101,6 @@
             background-color: #ffffff;
             color: #000000;
             transition: all 0.2s ease;
-        }
-
-        button:active {
-            transform: scale(0.98);
         }
 
         .btn-principal {
@@ -129,7 +128,7 @@
         }
 
         .link-direct {
-            color: #25d366;
+            color: #d4a373;
             font-weight: bold;
             text-decoration: none;
             font-size: 18px;
@@ -138,20 +137,20 @@
         }
 
         .img-meme {
-            width: 180px;
+            width: 130px;
             height: auto;
             margin-top: 20px;
+            border-radius: 10px;
         }
-    </style>
+    </script>
 </head>
 <body>
-
-    <div class="titulo-topo">Desse jeito até eu iria<br>para o encontro:</div>
 
     <div class="card" id="interfaceCard">
         <!-- Tela Inicial: Identificação -->
         <h2>Antes de começar...</h2>
-        <input type="text" id="nomeUsuario" class="input-nome" placeholder="Seu nome ou @ do Instagram">
+        <input type="text" id="nomeUsuario" class="input-nome" placeholder="Digite seu nome">
+        <div id="msgValidacao" class="msg-validacao">Somente letras são permitidas</div>
         <div class="container-botoes">
             <button class="btn-principal" onclick="iniciarQuiz()">Começar</button>
         </div>
@@ -172,11 +171,26 @@
 
         function iniciarQuiz() {
             const input = document.getElementById('nomeUsuario');
-            if (input.value.trim() === "") {
-                alert("Por favor, digite seu nome ou @ para começar!");
+            const msgValidacao = document.getElementById('msgValidacao');
+            const textoNome = input.value.trim();
+
+            // Expressão Regular: Permite apenas letras de A a Z (com acentos) e espaços
+            const apenasLetras = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
+
+            if (textoNome === "") {
+                msgValidacao.innerText = "Por favor, digite seu nome para começar!";
+                msgValidacao.style.display = "block";
                 return;
             }
-            nomeSalvo = input.value.trim();
+
+            if (!apenasLetras.test(textoNome)) {
+                msgValidacao.innerText = "Somente letras são permitidas";
+                msgValidacao.style.display = "block";
+                return;
+            }
+
+            msgValidacao.style.display = "none";
+            nomeSalvo = textoNome;
             atualizarTela();
         }
 
@@ -216,7 +230,7 @@
                 card.innerHTML = `
                     <h2>Parece que combinamos mais do que parece 🙄</h2>
                     <p id="msgSub">Você quer sair comigo?</p>
-                    <div class="container-botoes lado-a-lado" id="containerFinal">
+                    <div class="container-botoes lado-a-lado">
                         <button class="btn-sim-fuga" onclick="telaVitoria()">Sim</button>
                         <button class="btn-nao-fuga" id="btnNao" onclick="processarNao()">Não</button>
                     </div>
@@ -231,11 +245,12 @@
 
             if (cliquesNoNao <= 5) {
                 msgSub.innerText = mensagensNao[cliquesNoNao - 1];
+                msgSub.className = "erro-sistema"; // Aplica a classe de cor vermelha
             }
 
             if (cliquesNoNao === 6) {
                 btnNao.style.display = 'none';
-                msgSub.innerText = "Opção 'Não' desativada.";
+                msgSub.innerText = "Opção 'Não' desativada pelo sistema.";
             }
         }
 
@@ -244,11 +259,12 @@
             card.innerHTML = `
                 <h2>Vamos marcar nosso encontro! 😊</h2>
                 <a href="https://instagram.com" target="_blank" class="link-direct">Me chama no direct</a>
-                <div style="margin-top: 25px; font-size: 20px; font-weight: bold; color: #1a1a1a;">oii, ${nomeSalvo}</div>
-                <img src="https://shutterstock.com" class="img-meme" alt="Meme Rosa">
+                <div style="margin-top: 20px; font-size: 20px; font-weight: bold; color: #1a1a1a;">oii, ${nomeSalvo}</div>
+                <img src="https://emojiisland.com" class="img-meme" alt="Meme Rosa">
             `;
         }
     </script>
 
 </body>
-</html>
+            </html>
+        
