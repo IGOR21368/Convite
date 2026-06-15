@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desse jeito até eu iria</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #ffffff;
+            padding: 20px;
+        }
+
+        .titulo-topo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #000000;
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 90%;
+            line-height: 1.3;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h2 {
+            font-size: 22px;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 16px;
+            color: #777777;
+            margin-bottom: 30px;
+        }
+
+        .input-nome {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .container-botoes {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .container-botoes.lado-a-lado {
+            flex-direction: row;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            min-height: 50px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 500;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: #ffffff;
+            color: #000000;
+            transition: all 0.2s ease;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-principal {
+            background-color: #d4a373;
+            color: white;
+            border: none;
+            font-weight: bold;
+        }
+
+        .btn-nao-fuga {
+            background-color: #f0f0f0;
+            color: #333333;
+            border: none;
+            width: auto;
+            padding: 12px 30px;
+        }
+
+        .btn-sim-fuga {
+            background-color: #d4a373;
+            color: white;
+            border: none;
+            width: auto;
+            padding: 12px 30px;
+            font-weight: bold;
+        }
+
+        .link-direct {
+            color: #25d366;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 18px;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
+        .img-meme {
+            width: 180px;
+            height: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="titulo-topo">Desse jeito até eu iria<br>para o encontro:</div>
+
+    <div class="card" id="interfaceCard">
+        <!-- Tela Inicial: Identificação -->
+        <h2>Antes de começar...</h2>
+        <input type="text" id="nomeUsuario" class="input-nome" placeholder="Seu nome ou @ do Instagram">
+        <div class="container-botoes">
+            <button class="btn-principal" onclick="iniciarQuiz()">Começar</button>
+        </div>
+    </div>
+
+    <script>
+        let nomeSalvo = "";
+        let faseAtual = 1;
+        let cliquesNoNao = 0;
+
+        const mensagensNao = [
+            "Acho que você clicou sem saber",
+            "Tem certeza? Dá uma olhada de novo",
+            "Dica: a resposta correta é a outra!",
+            "Erro 404: opção inválida.",
+            "O sistema insiste que você escolha a resposta correta"
+        ];
+
+        function iniciarQuiz() {
+            const input = document.getElementById('nomeUsuario');
+            if (input.value.trim() === "") {
+                alert("Por favor, digite seu nome ou @ para começar!");
+                return;
+            }
+            nomeSalvo = input.value.trim();
+            atualizarTela();
+        }
+
+        function proximaFase() {
+            faseAtual++;
+            atualizarTela();
+        }
+
+        function atualizarTela() {
+            const card = document.getElementById('interfaceCard');
+            
+            if (faseAtual === 1) {
+                card.innerHTML = `
+                    <h2>Cinema ou Parque?</h2>
+                    <div class="container-botoes">
+                        <button onclick="proximaFase()">Cinema</button>
+                        <button onclick="proximaFase()">Parque</button>
+                    </div>
+                `;
+            } else if (faseAtual === 2) {
+                card.innerHTML = `
+                    <h2>Filme ou Série?</h2>
+                    <div class="container-botoes">
+                        <button onclick="proximaFase()">Filme</button>
+                        <button onclick="proximaFase()">Série</button>
+                    </div>
+                `;
+            } else if (faseAtual === 3) {
+                card.innerHTML = `
+                    <h2>Doce ou Salgado?</h2>
+                    <div class="container-botoes">
+                        <button onclick="proximaFase()">Doce</button>
+                        <button onclick="proximaFase()">Salgado</button>
+                    </div>
+                `;
+            } else if (faseAtual === 4) {
+                card.innerHTML = `
+                    <h2>Parece que combinamos mais do que parece 🙄</h2>
+                    <p id="msgSub">Você quer sair comigo?</p>
+                    <div class="container-botoes lado-a-lado" id="containerFinal">
+                        <button class="btn-sim-fuga" onclick="telaVitoria()">Sim</button>
+                        <button class="btn-nao-fuga" id="btnNao" onclick="processarNao()">Não</button>
+                    </div>
+                `;
+            }
+        }
+
+        function processarNao() {
+            cliquesNoNao++;
+            const msgSub = document.getElementById('msgSub');
+            const btnNao = document.getElementById('btnNao');
+
+            if (cliquesNoNao <= 5) {
+                msgSub.innerText = mensagensNao[cliquesNoNao - 1];
+            }
+
+            if (cliquesNoNao === 6) {
+                btnNao.style.display = 'none';
+                msgSub.innerText = "Opção 'Não' desativada.";
+            }
+        }
+
+        function telaVitoria() {
+            const card = document.getElementById('interfaceCard');
+            card.innerHTML = `
+                <h2>Vamos marcar nosso encontro! 😊</h2>
+                <a href="https://instagram.com" target="_blank" class="link-direct">Me chama no direct</a>
+                <div style="margin-top: 25px; font-size: 20px; font-weight: bold; color: #1a1a1a;">oii, ${nomeSalvo}</div>
+                <img src="https://shutterstock.com" class="img-meme" alt="Meme Rosa">
+            `;
+        }
+    </script>
+
+</body>
+</html>
