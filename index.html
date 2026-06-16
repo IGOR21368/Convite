@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,46 +17,45 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #000000; /* Fundo Geral Preto Puro */
+            background-color: #000000; /* Fundo Preto Puro */
             padding: 20px;
         }
 
         .card {
-            background: #0d0e12; /* Cinza Grafite Escuro */
+            background: #000000; /* Card Preto para mesclar com o fundo */
             padding: 30px 20px;
             border-radius: 16px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
-            max-width: 420px;
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.15); /* Sombra Verde Suave */
+            max-width: 440px;
             width: 100%;
-            min-height: 420px;
+            min-height: 480px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
             text-align: left;
-            border: 1px solid #1f242e;
+            border: 1px solid #00ff66; /* Borda Verde Neon Estilo Monitor Antigo */
         }
 
         .terminal-header {
             display: flex;
-            gap: 6px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 25px;
             width: 100%;
-            border-bottom: 1px solid #1f242e;
+            border-bottom: 1px solid rgba(0, 255, 102, 0.2);
             padding-bottom: 12px;
         }
 
         .dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
+            background-color: #00ff66; /* Todos os detalhes em verde */
+            opacity: 0.4;
         }
-        .dot.r { background-color: #ff5f56; }
-        .dot.y { background-color: #ffbd2e; }
-        .dot.g { background-color: #27c93f; }
 
         .console {
-            font-size: 13px;
+            font-size: 12px;
             line-height: 1.6;
             width: 100%;
             overflow-y: auto;
@@ -67,24 +66,18 @@
             margin-bottom: 6px;
             white-space: pre-wrap;
             word-wrap: break-word;
-            color: #d1d5db; /* Cor padrão cinza claro */
+            color: #00ff66; /* Texto estritamente Verde Neon */
         }
-
-        /* Classes de Cores do Protótipo */
-        .c-verde { color: #00ff66; font-weight: bold; }
-        .c-ciano { color: #00f0ff; font-weight: bold; }
-        .c-alerta { color: #ff5555; font-weight: bold; }
-        .c-branco { color: #ffffff; }
 
         .barra-progresso {
             width: 100%;
-            background-color: #161920;
-            height: 10px;
-            border-radius: 5px;
-            margin-top: 15px;
+            background-color: #000000;
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 20px;
             overflow: hidden;
             display: none;
-            border: 1px solid #1f242e;
+            border: 1px solid #00ff66;
         }
 
         .progresso {
@@ -97,23 +90,23 @@
         button {
             width: 100%;
             padding: 12px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             font-family: 'Courier New', Courier, monospace;
-            border: 1px solid #ff5555;
-            border-radius: 8px;
+            border: 1px solid #00ff66;
+            border-radius: 6px;
             cursor: pointer;
             background-color: transparent;
-            color: #ff5555;
+            color: #00ff66;
             margin-top: 20px;
             display: none;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             transition: all 0.2s ease;
         }
 
         button:active {
-            background-color: #ff5555;
-            color: #0d0e12;
+            background-color: #00ff66;
+            color: #000000;
         }
     </style>
 </head>
@@ -121,20 +114,20 @@
 
     <div class="card">
         <div class="terminal-header">
-            <div class="dot r"></div>
-            <div class="dot y"></div>
-            <div class="dot g"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
         </div>
         
         <div class="console" id="logConsole">
-            <div class="linha"><span class="c-ciano">[SYS]</span> Inicializando terminal raiz...</div>
+            <div class="linha">[SYSTEM] Initializing root terminal connection procedure...</div>
         </div>
 
         <div class="barra-progresso" id="barraContainer">
             <div class="progresso" id="barraFill"></div>
         </div>
 
-        <button id="btnSair" onclick="document.body.innerHTML='<h1 style=\'font-family:monospace;text-align:center;margin-top:45vh;color:#ff5555;\'>CONEXÃO ENCERRADA.</h1>';">FECHAR TERMINAL</button>
+        <button id="btnSair" onclick="document.body.innerHTML='<h1 style=\'font-family:monospace;text-align:center;margin-top:45vh;color:#00ff66;\'>CONNECTION TERMINATED.</h1>';">DISCONNECT TERMINAL</button>
     </div>
 
     <script>
@@ -143,33 +136,39 @@
         const barraFill = document.getElementById("barraFill");
         const btnSair = document.getElementById("btnSair");
 
-        const nCores = navigator.hardwareConcurrency || "4";
+        const nCores = navigator.hardwareConcurrency || "8";
         const ramEst = navigator.deviceMemory || "4";
         
         const userAgent = navigator.userAgent;
-        let osKernel = "LINUX_CORE";
-        if (userAgent.match(/Android/i)) osKernel = "ANDROID_KERNEL";
-        else if (userAgent.match(/iPhone|iPad|iPod/i)) osKernel = "DARWIN_IOS_CORE";
-        else if (userAgent.match(/Windows/i)) osKernel = "WIN_NT_6.3";
+        let osKernel = "X86_64_UNKNOWN_LINUX";
+        if (userAgent.match(/Android/i)) osKernel = "ARM64_ANDROID_OS_KERNEL";
+        else if (userAgent.match(/iPhone|iPad|iPod/i)) osKernel = "DARWIN_IOS_MACH_CORE";
+        else if (userAgent.match(/Windows/i)) osKernel = "WIN_NT_CORE_X64";
 
-        // Linhas com jargões reais de segurança e camuflagem
+        // Frases longas, profissionais e estritamente técnicas em inglês
         const scriptsLogs = [
-            { html: '<span class="c-verde">[OK]</span> Conectando ao cluster de proxies ocultos...', tempo: 600 },
-            { html: '<span class="c-verde">[OK]</span> Handshake criptográfico SSL/TLS estabelecido.', tempo: 1200 },
-            { html: `<span class="c-ciano">[SYS]</span> Alvo mapeado: <span class="c-branco">${osKernel}</span>`, tempo: 1800 },
-            { html: `<span class="c-ciano">[SYS]</span> Hardware do host: <span class="c-branco">${nCores} Threads // ${ramEst}GB RAM</span>`, tempo: 2400 },
-            { html: '<span class="c-alerta">[ATTACK]</span> Executando varredura de portas TCP via SYN Flood...', tempo: 3000 },
-            { html: '<span class="c-alerta">[ATTACK]</span> Injetando shellcode binário estolado na memória...', tempo: 3600 },
-            { html: '<span class="c-verde">[OK]</span> Quebra de hash MD5 concluída com sucesso.', tempo: 4200 },
-            { html: '<span class="c-ciano">[SYS]</span> Executando bypass estrutural no Firewall de borda...', tempo: 4800 }
+            { txt: "[SUCCESS] Securing connection through encrypted proxy cascade network...", tempo: 600 },
+            { txt: "[SUCCESS] Cryptographic TLS 1.3 handshake sequence successfully verified.", tempo: 1200 },
+            { txt: `[INFO] Remote host platform kernel identified as: [${osKernel}]`, tempo: 1800 },
+            { txt: `[INFO] Hardware profiling: ${nCores} logical processing threads detected.`, tempo: 2400 },
+            { txt: `[INFO] Memory allocation mapping: ~${ramEst}GB total volatile RAM available.`, tempo: 3000 },
+            { txt: "[ATTACK] Initiating multi-threaded TCP/IP stealth port scanning vector...", tempo: 3600 },
+            { txt: "[ATTACK] Injecting compiled binary shellcode payload into system stack...", tempo: 4200 },
+            { txt: "[SUCCESS] RSA-1024 asynchronous cryptographic key distribution verified.", tempo: 4800 },
+            { txt: "[INFO] Executing high-level subsystem bypass on boundary firewall...", tempo: 5400 },
+            { txt: "[ATTACK] Allocating virtual environment blocks for memory dump operations...", tempo: 6000 },
+            { txt: "[INFO] Compiling environment logs and clearing transient trace footprints...", tempo: 6600 },
+            { txt: "[SUCCESS] Remote session stabilized. Initializing kernel extraction...", tempo: 7200 }
         ];
 
         scriptsLogs.forEach((log) => {
             setTimeout(() => {
                 const novaLinha = document.createElement("div");
                 novaLinha.className = "linha";
-                novaLinha.innerHTML = log.html;
+                novaLinha.innerText = log.txt;
                 consoleElem.appendChild(novaLinha);
+                // Rola o console automaticamente para baixo para acompanhar os novos textos
+                consoleElem.scrollTop = consoleElem.scrollHeight;
             }, log.tempo);
         });
 
@@ -186,14 +185,16 @@
                     exibirConclusao();
                 }
             }, 25);
-        }, 5100);
+        }, 7600);
 
         function exibirConclusao() {
             const finalLinha = document.createElement("div");
             finalLinha.className = "linha";
             finalLinha.style.marginTop = "15px";
-            finalLinha.innerHTML = '<span class="c-verde">[SUCCESS] SCRIPT EXECUTADO COM SUCESSO.</span>\n<span class="c-branco">STATUS INTERNO: LOCKDOWN COMPLETO.</span>';
+            finalLinha.style.fontWeight = "bold";
+            finalLinha.innerText = "\n[SUCCESS] DEPLOYMENT SEQUENCE COMPLETELY EXECUTED.\nTERMINAL STATUS: COLD LOCKDOWN COMPLETED.";
             consoleElem.appendChild(finalLinha);
+            consoleElem.scrollTop = consoleElem.scrollHeight;
             
             btnSair.style.display = "block";
         }
