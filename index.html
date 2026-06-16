@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonic Retro Runner - Com Inimigos</title>
+    <title>Sonic Retro Runner - Versão Real</title>
     <style>
         * {
             margin: 0;
@@ -22,51 +22,46 @@
             user-select: none;
         }
 
+        /* Janela do Jogo com Proporção de Arcade */
         #game-container {
             width: 100%;
             max-width: 800px;
             height: 400px;
             background-color: #2058c0;
-            background-image: linear-gradient(to bottom, #2058c0 60%, #48a0f8 100%);
+            /* Fundo oficial com montanhas e nuvens da Green Hill Zone */
+            background-image: url('https://squarespace-cdn.com');
+            background-size: auto 100%;
+            background-repeat: repeat-x;
             position: relative;
             overflow: hidden;
             border: 4px solid #fff;
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: scrollBackdrop 15s linear infinite;
+            animation-play-state: paused;
         }
 
-        .scenery {
-            position: absolute;
-            bottom: 80px;
-            width: 200%;
-            height: 100px;
-            background: radial-gradient(circle at 50% 120%, #48b848 30%, transparent 33%);
-            background-size: 160px 100px;
-            animation: scrollBackground 12s linear infinite;
-        }
-
+        /* Chão de Terra Quadriculada Original da SEGA */
         #floor {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 200%;
             height: 80px;
-            background-color: #e07800;
-            background-image: 
-                linear-gradient(45deg, #a84800 25%, transparent 25%, transparent 75%, #a84800 75%),
-                linear-gradient(45deg, #a84800 25%, transparent 25%, transparent 75%, #a84800 75%);
-            background-size: 40px 40px;
-            background-position: 0 0, 20px 20px;
-            border-top: 6px solid #00a800;
-            animation: scrollBackground 2s linear infinite;
+            background-image: url('https://githubusercontent.com');
+            background-size: auto 100%;
+            background-repeat: repeat-x;
+            animation: scrollFloor 2s linear infinite;
+            animation-play-state: paused;
         }
 
+        /* Interface de Placar (HUD) */
         #hud {
             position: absolute;
             top: 15px;
             left: 15px;
             color: #f8b800;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             text-shadow: 2px 2px #000;
             z-index: 10;
@@ -74,57 +69,47 @@
         }
         .hud-val { color: #fff; }
 
+        /* Sprite Real do Sonic Correndo */
         #sonic {
-            width: 50px;
-            height: 60px;
-            background-color: #0028a0;
-            border-radius: 10px 25px 10px 10px;
+            width: 64px;
+            height: 64px;
             position: absolute;
-            bottom: 80px;
+            bottom: 72px;
             left: 80px;
-            box-shadow: inset -6px -6px 0 #001860, -4px 4px 0 #f8d878;
-            transition: transform 0.1s;
-        }
-        #sonic::before {
-            content: '';
-            position: absolute;
-            top: 10px; right: 5px;
-            width: 15px; height: 15px;
-            background: #fff; border-radius: 50%;
+            background-image: url('https://githubusercontent.com');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 5;
         }
 
-        /* INIMIGO: MOTOBUG (Vermelho com rodinha preta) */
+        /* Sprite Real do Inimigo Motobug */
         #enemy {
-            width: 45px;
-            height: 40px;
+            width: 55px;
+            height: 45px;
             position: absolute;
-            bottom: 80px;
-            right: -50px;
-            background-color: #dc3545; /* Corpo Vermelho */
-            border-radius: 20px 20px 5px 5px;
-            box-shadow: inset -5px -5px 0 #a71d2a, 0 8px 0 #333; /* Rodinha inferior */
-        }
-        #enemy::before {
-            content: '';
-            position: absolute;
-            top: 10px; left: -5px;
-            width: 12px; height: 8px;
-            background: #f8b800; /* Garra/Antena amarela frontal */
-            border-radius: 5px;
+            bottom: 75px;
+            right: -60px;
+            background-image: url('https://githubusercontent.com');
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 5;
         }
 
-        /* Argolas Flutuantes Reais */
+        /* Sprite da Argola Dourada Girando */
         #ring-item {
-            width: 20px;
-            height: 25px;
-            border: 4px solid #f8b800;
-            border-radius: 50%;
+            width: 28px;
+            height: 28px;
             position: absolute;
-            bottom: 160px; /* Fica no alto para pegar pulando */
+            bottom: 170px;
             right: -100px;
-            box-shadow: 0 0 8px #f8b800;
+            background-image: url('https://githubusercontent.com');
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 4;
         }
 
+        /* Tela de Início / Game Over */
         #screen-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -138,33 +123,45 @@
         }
         #screen-overlay h1 {
             color: #f83000;
-            font-size: 40px;
-            margin-bottom: 15px;
+            font-size: 42px;
+            margin-bottom: 20px;
             text-shadow: 3px 3px #000;
+            letter-spacing: 2px;
         }
         #screen-overlay p {
-            font-size: 16px;
+            font-size: 18px;
             background: #f8b800;
             color: #000;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
+            box-shadow: 0 4px 0 #bc8a00;
+            transition: transform 0.1s;
+        }
+        #screen-overlay p:active {
+            transform: scale(0.95);
         }
 
-        @keyframes scrollBackground {
-            from { transform: translateX(0); }
-            to { transform: translateX(-50%); }
+        /* Animações de Movimento e Física */
+        @keyframes scrollBackdrop {
+            from { background-position: 0 0; }
+            to { background-position: -800px 0; }
+        }
+
+        @keyframes scrollFloor {
+            from { background-position: 0 0; }
+            to { background-position: -400px 0; }
         }
 
         .jumping {
-            animation: jumpArc 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: jumpArc 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         @keyframes jumpArc {
-            0% { bottom: 80px; transform: rotate(0deg); }
-            50% { bottom: 230px; transform: rotate(180deg); border-radius: 50%; }
-            100% { bottom: 80px; transform: rotate(360deg); }
+            0% { bottom: 72px; }
+            50% { bottom: 240px; }
+            100% { bottom: 72px; }
         }
     </style>
 </head>
@@ -176,7 +173,6 @@
             RINGS <span id="rings-val" class="hud-val">0</span>
         </div>
 
-        <div class="scenery"></div>
         <div id="floor"></div>
 
         <div id="sonic"></div>
@@ -184,12 +180,13 @@
         <div id="ring-item"></div>
 
         <div id="screen-overlay">
-            <h1 id="title-msg">SONIC ATTACK</h1>
+            <h1 id="title-msg">SONIC RUNNER</h1>
             <p id="action-btn" onclick="startGame()">CLIQUE PARA JOGAR</p>
         </div>
     </div>
 
     <script>
+        const container = document.getElementById('game-container');
         const sonic = document.getElementById('sonic');
         const enemy = document.getElementById('enemy');
         const ringItem = document.getElementById('ring-item');
@@ -204,103 +201,86 @@
         let isPlaying = false;
         let score = 0;
         let rings = 0;
-        let gameSpeed = 5;
+        let gameSpeed = 6;
         let gameLoopInterval;
         
         let enemyX = 850;
         let ringX = 1100;
 
+        // Comandos de pulo universais (PC e Celular)
         document.addEventListener('keydown', (e) => { if (e.code === 'Space' || e.code === 'ArrowUp') triggerJump(); });
-        document.getElementById('game-container').addEventListener('touchstart', triggerJump);
-        document.getElementById('game-container').addEventListener('mousedown', triggerJump);
+        container.addEventListener('touchstart', (e) => { e.preventDefault(); triggerJump(); });
+        container.addEventListener('mousedown', triggerJump);
 
         function triggerJump() {
             if (!isPlaying || isJumping) return;
             isJumping = true;
+            
+            // Altera para a imagem do Sonic em formato de bola giratória
+            sonic.style.backgroundImage = "url('https://githubusercontent.com')";
             sonic.classList.add('jumping');
             
             setTimeout(() => {
                 sonic.classList.remove('jumping');
+                // Retorna para a animação do Sonic correndo normalmente ao pisar no chão
+                if (isPlaying) {
+                    sonic.style.backgroundImage = "url('https://githubusercontent.com')";
+                }
                 isJumping = false;
-            }, 600);
+            }, 650);
         }
 
         function startGame() {
             score = 0;
             rings = 0;
-            gameSpeed = 5;
+            gameSpeed = 6;
             enemyX = 850;
             ringX = 1100;
             
             scoreVal.innerText = score;
             ringsVal.innerText = rings;
+            
             enemy.style.display = 'block';
             ringItem.style.display = 'block';
+            sonic.style.backgroundImage = "url('https://githubusercontent.com')";
             
             overlay.style.display = 'none';
+            container.style.animationPlayState = 'running';
             floor.style.animationPlayState = 'running';
             isPlaying = true;
 
+            // Inicia o motor de física do jogo
             gameLoopInterval = setInterval(gameLoop, 10);
         }
 
         function gameLoop() {
-            // Movimenta os elementos na tela
             enemyX -= gameSpeed;
             ringX -= gameSpeed;
 
-            // Loop do Inimigo
-            if (enemyX < -50) {
-                enemyX = 850 + Math.random() * 300; // Surge em tempos aleatórios
+            // Reposiciona o Motobug se ele sair da tela
+            if (enemyX < -60) {
+                enemyX = 850 + Math.random() * 400;
                 enemy.style.display = 'block';
                 score += 100;
                 scoreVal.innerText = score;
-                if(gameSpeed < 12) gameSpeed += 0.2;
+                if (gameSpeed < 14) gameSpeed += 0.2; // Aceleração gradual
             }
 
-            // Loop da Argola
-            if (ringX < -30) {
-                ringX = 900 + Math.random() * 400;
+            // Reposiciona a Argola Dourada se ela sumir na esquerda
+            if (ringX < -40) {
+                ringX = 900 + Math.random() * 500;
                 ringItem.style.display = 'block';
             }
 
             enemy.style.left = enemyX + 'px';
             ringItem.style.left = ringX + 'px';
 
-            // Captura as alturas atuais em tempo real
-            let sonicY = parseInt(window.getComputedStyle(sonic).getPropertyValue('bottom'));
+            // Captura as alturas dos personagens em tempo real
+            let sonicRect = sonic.getBoundingClientRect();
+            let enemyRect = enemy.getBoundingClientRect();
+            let ringRect = ringItem.getBoundingClientRect();
 
-            // 1. SISTEMA DE ATAQUE / COLISÃO DO INIMIGO
-            if (enemyX > 80 && enemyX < 130 && enemy.style.display !== 'none') {
-                // Se o Sonic caiu por cima do robô (Pulo Ativo)
-                if (sonicY > 110) {
-                    enemy.style.display = 'none'; // Destrói o inimigo
-                    score += 500; // Bônus por derrotar inimigo!
-                    scoreVal.innerText = score;
-                } else {
-                    // Se bateu andando no chão
-                    gameOver();
-                }
-            }
-
-            // 2. SISTEMA DE COLETAR ARGOLAS
-            if (ringX > 80 && ringX < 120 && ringItem.style.display !== 'none') {
-                // Se o Sonic alcançou a altura da argola no ar
-                if (sonicY > 130) {
-                    ringItem.style.display = 'none';
-                    rings += 1;
-                    ringsVal.innerText = rings;
-                    score += 50;
-                    scoreVal.innerText = score;
-                }
-            }
-        }
-
-        function gameOver() {
-            isPlaying = false;
-            clearInterval(gameLoopInterval);
-            floor.style.animationPlayState = 'paused';
+            // 1. MECÂNICA DE COMBATE CONTRA O MOTOBUG
+            if (enemyX > 60 && enemyX < 130 && enemy.style.display !== 'none') {
+                // Se o Sonic atingir o robô enquanto estiver em forma de bolinha (pulando)
             
-            titleMsg.innerText = "GAME OVER";
-            actionBtn.innerText = "TENTAR DE NOVO";
-        
