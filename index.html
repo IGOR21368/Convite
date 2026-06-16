@@ -3,267 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Convite Especial</title>
+    <title>Sonic Retro Runner - Com Inimigos</title>
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
         }
 
         body {
+            background-color: #111;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #ffffff;
-            padding: 20px;
+            overflow: hidden;
+            user-select: none;
         }
 
-        .card {
-            background: #ffffff;
-            padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0, 0, 0, 0.02);
-            text-align: center;
-            max-width: 400px;
+        #game-container {
             width: 100%;
-            min-height: 280px;
+            max-width: 800px;
+            height: 400px;
+            background-color: #2058c0;
+            background-image: linear-gradient(to bottom, #2058c0 60%, #48a0f8 100%);
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .scenery {
+            position: absolute;
+            bottom: 80px;
+            width: 200%;
+            height: 100px;
+            background: radial-gradient(circle at 50% 120%, #48b848 30%, transparent 33%);
+            background-size: 160px 100px;
+            animation: scrollBackground 12s linear infinite;
+        }
+
+        #floor {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 80px;
+            background-color: #e07800;
+            background-image: 
+                linear-gradient(45deg, #a84800 25%, transparent 25%, transparent 75%, #a84800 75%),
+                linear-gradient(45deg, #a84800 25%, transparent 25%, transparent 75%, #a84800 75%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            border-top: 6px solid #00a800;
+            animation: scrollBackground 2s linear infinite;
+        }
+
+        #hud {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: #f8b800;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 2px 2px #000;
+            z-index: 10;
+            line-height: 1.5;
+        }
+        .hud-val { color: #fff; }
+
+        #sonic {
+            width: 50px;
+            height: 60px;
+            background-color: #0028a0;
+            border-radius: 10px 25px 10px 10px;
+            position: absolute;
+            bottom: 80px;
+            left: 80px;
+            box-shadow: inset -6px -6px 0 #001860, -4px 4px 0 #f8d878;
+            transition: transform 0.1s;
+        }
+        #sonic::before {
+            content: '';
+            position: absolute;
+            top: 10px; right: 5px;
+            width: 15px; height: 15px;
+            background: #fff; border-radius: 50%;
+        }
+
+        /* INIMIGO: MOTOBUG (Vermelho com rodinha preta) */
+        #enemy {
+            width: 45px;
+            height: 40px;
+            position: absolute;
+            bottom: 80px;
+            right: -50px;
+            background-color: #dc3545; /* Corpo Vermelho */
+            border-radius: 20px 20px 5px 5px;
+            box-shadow: inset -5px -5px 0 #a71d2a, 0 8px 0 #333; /* Rodinha inferior */
+        }
+        #enemy::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: -5px;
+            width: 12px; height: 8px;
+            background: #f8b800; /* Garra/Antena amarela frontal */
+            border-radius: 5px;
+        }
+
+        /* Argolas Flutuantes Reais */
+        #ring-item {
+            width: 20px;
+            height: 25px;
+            border: 4px solid #f8b800;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 160px; /* Fica no alto para pegar pulando */
+            right: -100px;
+            box-shadow: 0 0 8px #f8b800;
+        }
+
+        #screen-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            color: #fff;
+            z-index: 20;
         }
-
-        h2 {
-            font-size: 22px;
-            color: #1a1a1a;
+        #screen-overlay h1 {
+            color: #f83000;
+            font-size: 40px;
             margin-bottom: 15px;
-            font-weight: 600;
+            text-shadow: 3px 3px #000;
         }
-
-        p {
+        #screen-overlay p {
             font-size: 16px;
-            color: #777777;
-            margin-bottom: 30px;
-            transition: color 0.2s ease;
-        }
-
-        p.erro-sistema {
-            color: #dc3545;
-            font-weight: bold;
-        }
-
-        .input-nome {
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            outline: none;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .msg-validacao {
-            color: #dc3545;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 15px;
-            display: none;
-        }
-
-        .container-botoes {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
-        }
-
-        .container-botoes.lado-a-lado {
-            flex-direction: row;
-            justify-content: center;
-            gap: 15px;
-            position: relative;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: 500;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
+            background: #f8b800;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 5px;
             cursor: pointer;
-            background-color: #ffffff;
-            color: #000000;
-            transition: all 0.2s ease;
-        }
-
-        .btn-principal {
-            background-color: #d4a373;
-            color: white;
-            border: none;
             font-weight: bold;
         }
 
-        .btn-nao-fuga {
-            background-color: #f0f0f0;
-            color: #333333;
-            border: none;
-            width: auto;
-            padding: 12px 30px;
+        @keyframes scrollBackground {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
         }
 
-        .btn-sim-fuga {
-            background-color: #d4a373;
-            color: white;
-            border: none;
-            width: auto;
-            padding: 12px 30px;
-            font-weight: bold;
+        .jumping {
+            animation: jumpArc 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        .link-direct {
-            color: #d4a373;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 18px;
-            margin-top: 15px;
-            display: inline-block;
-        }
-
-        .img-meme {
-            width: 160px;
-            height: auto;
-            margin-top: 20px;
-            border-radius: 10px;
+        @keyframes jumpArc {
+            0% { bottom: 80px; transform: rotate(0deg); }
+            50% { bottom: 230px; transform: rotate(180deg); border-radius: 50%; }
+            100% { bottom: 80px; transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
-    <div class="card" id="interfaceCard">
-        <!-- Tela Inicial: Identificação -->
-        <h2>Antes de começar...</h2>
-        <input type="text" id="nomeUsuario" class="input-nome" placeholder="Digite seu nome">
-        <div id="msgValidacao" class="msg-validacao">Somente letras são permitidas</div>
-        <div class="container-botoes">
-            <button class="btn-principal" onclick="iniciarQuiz()">Começar</button>
+    <div id="game-container">
+        <div id="hud">
+            SCORE <span id="score-val" class="hud-val">0</span><br>
+            RINGS <span id="rings-val" class="hud-val">0</span>
+        </div>
+
+        <div class="scenery"></div>
+        <div id="floor"></div>
+
+        <div id="sonic"></div>
+        <div id="enemy"></div>
+        <div id="ring-item"></div>
+
+        <div id="screen-overlay">
+            <h1 id="title-msg">SONIC ATTACK</h1>
+            <p id="action-btn" onclick="startGame()">CLIQUE PARA JOGAR</p>
         </div>
     </div>
 
     <script>
-        let nomeSalvo = "";
-        let faseAtual = 0; 
-        let cliquesNoNao = 0;
+        const sonic = document.getElementById('sonic');
+        const enemy = document.getElementById('enemy');
+        const ringItem = document.getElementById('ring-item');
+        const floor = document.getElementById('floor');
+        const overlay = document.getElementById('screen-overlay');
+        const titleMsg = document.getElementById('title-msg');
+        const actionBtn = document.getElementById('action-btn');
+        const scoreVal = document.getElementById('score-val');
+        const ringsVal = document.getElementById('rings-val');
 
-        const mensagensNao = [
-            "Acho que você clicou sem saber",
-            "Tem certeza? Dá uma olhada de novo",
-            "Dica: a resposta correta é a outra!",
-            "Erro 404: opção inválida.",
-            "O sistema insiste que você escolha a resposta correta"
-        ];
+        let isJumping = false;
+        let isPlaying = false;
+        let score = 0;
+        let rings = 0;
+        let gameSpeed = 5;
+        let gameLoopInterval;
+        
+        let enemyX = 850;
+        let ringX = 1100;
 
-        function iniciarQuiz() {
-            const input = document.getElementById('nomeUsuario');
-            const msgValidacao = document.getElementById('msgValidacao');
-            const textoNome = input.value.trim();
+        document.addEventListener('keydown', (e) => { if (e.code === 'Space' || e.code === 'ArrowUp') triggerJump(); });
+        document.getElementById('game-container').addEventListener('touchstart', triggerJump);
+        document.getElementById('game-container').addEventListener('mousedown', triggerJump);
 
-            const apenasLetras = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
-
-            if (textoNome === "") {
-                msgValidacao.innerText = "Por favor, digite seu nome para começar!";
-                msgValidacao.style.display = "block";
-                return;
-            }
-
-            if (!apenasLetras.test(textoNome)) {
-                msgValidacao.innerText = "Somente letras são permitidas";
-                msgValidacao.style.display = "block";
-                return;
-            }
-
-            msgValidacao.style.display = "none";
-            nomeSalvo = textoNome;
-            faseAtual = 1; 
-            atualizarTela();
-        }
-
-        function proximaFase() {
-            faseAtual++;
-            atualizarTela();
-        }
-
-        function atualizarTela() {
-            const card = document.getElementById('interfaceCard');
+        function triggerJump() {
+            if (!isPlaying || isJumping) return;
+            isJumping = true;
+            sonic.classList.add('jumping');
             
-            if (faseAtual === 1) {
-                card.innerHTML = `
-                    <h2>Cinema ou Parque?</h2>
-                    <div class="container-botoes">
-                        <button onclick="proximaFase()">Cinema</button>
-                        <button onclick="proximaFase()">Parque</button>
-                    </div>
-                `;
-            } else if (faseAtual === 2) {
-                card.innerHTML = `
-                    <h2>Filme ou Série?</h2>
-                    <div class="container-botoes">
-                        <button onclick="proximaFase()">Filme</button>
-                        <button onclick="proximaFase()">Série</button>
-                    </div>
-                `;
-            } else if (faseAtual === 3) {
-                card.innerHTML = `
-                    <h2>Doce ou Salgado?</h2>
-                    <div class="container-botoes">
-                        <button onclick="proximaFase()">Doce</button>
-                        <button onclick="proximaFase()">Salgado</button>
-                    </div>
-                `;
-            } else if (faseAtual === 4) {
-                card.innerHTML = `
-                    <h2>Parece que combinamos mais do que parece 🙄</h2>
-                    <p id="msgSub">Você quer sair comigo?</p>
-                    <div class="container-botoes lado-a-lado">
-                        <button class="btn-sim-fuga" onclick="telaVitoria()">Sim</button>
-                        <button class="btn-nao-fuga" id="btnNao" onclick="processarNao()">Não</button>
-                    </div>
-                `;
+            setTimeout(() => {
+                sonic.classList.remove('jumping');
+                isJumping = false;
+            }, 600);
+        }
+
+        function startGame() {
+            score = 0;
+            rings = 0;
+            gameSpeed = 5;
+            enemyX = 850;
+            ringX = 1100;
+            
+            scoreVal.innerText = score;
+            ringsVal.innerText = rings;
+            enemy.style.display = 'block';
+            ringItem.style.display = 'block';
+            
+            overlay.style.display = 'none';
+            floor.style.animationPlayState = 'running';
+            isPlaying = true;
+
+            gameLoopInterval = setInterval(gameLoop, 10);
+        }
+
+        function gameLoop() {
+            // Movimenta os elementos na tela
+            enemyX -= gameSpeed;
+            ringX -= gameSpeed;
+
+            // Loop do Inimigo
+            if (enemyX < -50) {
+                enemyX = 850 + Math.random() * 300; // Surge em tempos aleatórios
+                enemy.style.display = 'block';
+                score += 100;
+                scoreVal.innerText = score;
+                if(gameSpeed < 12) gameSpeed += 0.2;
+            }
+
+            // Loop da Argola
+            if (ringX < -30) {
+                ringX = 900 + Math.random() * 400;
+                ringItem.style.display = 'block';
+            }
+
+            enemy.style.left = enemyX + 'px';
+            ringItem.style.left = ringX + 'px';
+
+            // Captura as alturas atuais em tempo real
+            let sonicY = parseInt(window.getComputedStyle(sonic).getPropertyValue('bottom'));
+
+            // 1. SISTEMA DE ATAQUE / COLISÃO DO INIMIGO
+            if (enemyX > 80 && enemyX < 130 && enemy.style.display !== 'none') {
+                // Se o Sonic caiu por cima do robô (Pulo Ativo)
+                if (sonicY > 110) {
+                    enemy.style.display = 'none'; // Destrói o inimigo
+                    score += 500; // Bônus por derrotar inimigo!
+                    scoreVal.innerText = score;
+                } else {
+                    // Se bateu andando no chão
+                    gameOver();
+                }
+            }
+
+            // 2. SISTEMA DE COLETAR ARGOLAS
+            if (ringX > 80 && ringX < 120 && ringItem.style.display !== 'none') {
+                // Se o Sonic alcançou a altura da argola no ar
+                if (sonicY > 130) {
+                    ringItem.style.display = 'none';
+                    rings += 1;
+                    ringsVal.innerText = rings;
+                    score += 50;
+                    scoreVal.innerText = score;
+                }
             }
         }
 
-        function processarNao() {
-            cliquesNoNao++;
-            const msgSub = document.getElementById('msgSub');
-            const btnNao = document.getElementById('btnNao');
-
-            if (cliquesNoNao <= 5) {
-                msgSub.innerText = mensagensNao[cliquesNoNao - 1];
-                msgSub.className = "erro-sistema";
-            }
-
-            if (cliquesNoNao === 6) {
-                btnNao.style.display = 'none';
-                msgSub.innerText = "Opção 'Não' desativada pelo sistema.";
-            }
-        }
-
-        function telaVitoria() {
-            const card = document.getElementById('interfaceCard');
-            card.innerHTML = `
-                <h2>Vamos marcar nosso encontro! 😏</h2>
-                <a href="https://instagram.com" target="_blank" class="link-direct">Me chama no direct</a>
-                <div style="margin-top: 20px; font-size: 20px; font-weight: bold; color: #1a1a1a;">oii, ${nomeSalvo}</div>
-                <img src="https://imgur.com" class="img-meme" alt="Emoji com Rosa">
-            `;
-        }
-    </script>
-
-</body>
-</html>
+        function gameOver() {
+            isPlaying = false;
+            clearInterval(gameLoopInterval);
+            floor.style.animationPlayState = 'paused';
+            
+            titleMsg.innerText = "GAME OVER";
+            actionBtn.innerText = "TENTAR DE NOVO";
+        
