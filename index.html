@@ -20,36 +20,36 @@
             overflow: hidden;
             position: relative;
             display: flex;
-            justify-content: flex-end; /* Colado na borda lateral direita */
+            justify-content: flex-start; /* Alinhado estritamente na borda esquerda */
             align-items: flex-start;
         }
 
-        /* A SUA CAVEIRA DE ALTA FIDELIDADE OCULTA NO CENTRO (Opacidade 2%) */
+        /* SUA CAVEIRA DE ALTA FIDELIDADE - EXTRAÍDA DO SEU DESIGN (OPACIDADE 8%) */
         .ghost-skull {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             color: #00ff66;
-            font-size: 5px; /* Tamanho calibrado para caber na tela do celular sem quebrar linha */
+            font-size: 6px;
             line-height: 1.1;
             white-space: pre;
-            opacity: 0.02; /* Praticamente invisível se não focar o olhar na tela escura */
+            opacity: 0.08;
             z-index: 1;
             pointer-events: none;
             text-align: center;
         }
 
-        /* Stream de dados vertical colado rigorosamente na borda direita */
-        .right-border-stream {
-            width: 150px;
+        /* Stream de dados vertical colado na borda esquerda com largura de 190px */
+        .left-border-stream {
+            width: 190px;
             height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            align-items: flex-end;
-            padding-right: 5px;
+            align-items: flex-start;
+            padding-left: 8px;
             padding-top: 5px;
             z-index: 2;
         }
@@ -59,18 +59,30 @@
             color: #00ff66;
             line-height: 1.2;
             white-space: nowrap;
-            text-align: right;
+            text-align: left;
             opacity: 0.85;
+        }
+
+        /* Mensagem de encerramento em inglês após os 20 segundos */
+        .terminated-msg {
+            font-size: 11px;
+            font-weight: bold;
+            color: #00ff66;
+            padding-left: 8px;
+            padding-top: 15px;
+            letter-spacing: 1px;
+            z-index: 2;
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- SUA ARTE EXATA TOTALMENTE INJETADA NA ESTRUTURA -->
+    <!-- SUA ARTE INTEGRADA E REFORÇADA NO CENTRO -->
     <div class="ghost-skull">__________________________________________________
 ___________________¶¶¶¶¶¶¶¶¶¶¶¶¶__________________
 ______________¶¶¶¶¶¶________¶¶¶¶¶¶¶_______________
-____________¶¶¶¶__________________¶¶¶¶____________
+____________¶¶¶¶__________________¶¶¶¶ Rhodes ____________
 __________¶¶¶________________________¶¶¶__________
 _________¶¶____________________________¶¶¶________
 _______¶¶¶_______________________________¶¶_______
@@ -113,12 +125,17 @@ ________________¶¶¶____________¶__________________
 _________________¶¶¶¶¶¶¶¶¶__¶¶¶¶__________________
 __________________________¶¶______________________</div>
 
-    <div class="right-border-stream" id="streamContainer">
+    <!-- CONTAINER DA BORDA ESQUERDA -->
+    <div class="left-border-stream" id="streamContainer">
         <div class="data-line">[SYSTEM_BOOT]</div>
     </div>
 
+    <!-- MENSAGEM DE ENCERRAMENTO -->
+    <div class="terminated-msg" id="endMessage">[PROCESS TERMINATED]</div>
+
     <script>
         const container = document.getElementById("streamContainer");
+        const endMessage = document.getElementById("endMessage");
 
         const hackerLogs = [
             "SYS_ALLOC_0x7FFF",
@@ -143,8 +160,8 @@ __________________________¶¶______________________</div>
             "SHELLCODE_INJECT"
         ];
 
-        // Avalanche de dados desabando na borda direita (Velocidade Máxima)
-        setInterval(() => {
+        // Inicia o fluxo contínuo de dados na esquerda
+        const streamInterval = setInterval(() => {
             const log1 = hackerLogs[Math.floor(Math.random() * hackerLogs.length)];
             const log2 = hackerLogs[Math.floor(Math.random() * hackerLogs.length)];
             
@@ -154,11 +171,17 @@ __________________________¶¶______________________</div>
             
             container.appendChild(novaLinha);
 
-            // Mantém a rolagem infinita e o site leve limpando o topo do buffer
-            if (container.children.length > 70) {
+            if (container.children.length > 75) {
                 container.removeChild(container.firstChild);
             }
         }, 12);
+
+        // TIMER CRUCIAL: Executa a parada total exatamente aos 20 segundos
+        setTimeout(() => {
+            clearInterval(streamInterval); // Desliga os motores do fluxo
+            container.style.display = "none"; // Deleta o bloco de dados correndo
+            endMessage.style.display = "block"; // Ativa o aviso estático na tela
+        }, 20000); // 20000 milissegundos = 20 segundos cravados
     </script>
 
 </body>
