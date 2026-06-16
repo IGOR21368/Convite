@@ -64,7 +64,6 @@
             outline: none;
             margin-bottom: 5px;
             text-align: center;
-            transition: border-color 0.2s ease;
         }
 
         .input-nome:focus {
@@ -88,11 +87,7 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-        }
-
-        button:active {
-            transform: scale(0.98);
+            transition: background-color 0.2s ease;
         }
 
         .btn-principal {
@@ -121,13 +116,6 @@
             color: #1a1a1a;
         }
 
-        #arena {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-
         canvas {
             background-color: #111111;
             border-radius: 12px;
@@ -142,17 +130,11 @@
 <body>
 
     <div class="card" id="mainCard">
-        <div id="telaLogin">
-            <h2>Ping Pong 🏓</h2>
-            <p>Insira seu nome para enfrentar o sistema de defesa.</p>
-            <input type="text" id="nomeJogador" class="input-nome" placeholder="Digite seu nome" maxlength="15">
-            <div id="msgValidacao" class="msg-validacao">Somente letras são permitidas</div>
-            <button class="btn-principal" onclick="validarEIniciar()">Iniciar Partida</button>
-        </div>
-
-        <div id="arena">
-            <canvas id="pongCanvas" width="340" height="380"></canvas>
-        </div>
+        <h2>Ping Pong 🏓</h2>
+        <p>Insira seu nome para enfrentar o sistema de defesa.</p>
+        <input type="text" id="nomeJogador" class="input-nome" placeholder="Digite seu nome" maxlength="15">
+        <div id="msgValidacao" class="msg-validacao">Somente letras são permitidas</div>
+        <button class="btn-principal" onclick="processarEtapaValidacao()">Iniciar Partida</button>
     </div>
 
     <script>
@@ -163,9 +145,8 @@
         const raqueteLargura = 70;
         const bolaRaio = 6;
 
-        let jugadorX = (340 - raqueteLargura) / 2;
-        let botX = (340 - raqueteLargura) / 2;
-        
+        let jugadorX = 135;
+        let botX = 135;
         let bolaX = 170;
         let bolaY = 190;
         let bolaVelX = 3;
@@ -176,7 +157,8 @@
         const pontosParaVencer = 3;
         let executando = false;
 
-        function validarEIniciar() {
+        // SEQUÊNCIA 1: Validação dos dados de entrada
+        function processarEtapaValidacao() {
             const input = document.getElementById('nomeJogador');
             const msg = document.getElementById('msgValidacao');
             const texto = input.value.trim();
@@ -197,10 +179,24 @@
             msg.style.visibility = "hidden";
             nomeJogadorSalvo = texto;
 
-            document.getElementById("telaLogin").style.display = "none";
-            document.getElementById("arena").style.display = "flex";
+            // Avança para a próxima etapa na sequência
+            processarEtapaConstrucaoTela();
+        }
+
+        // SEQUÊNCIA 2: Injeção da estrutura visual no navegador
+        function processarEtapaConstrucaoTela() {
+            const card = document.getElementById("mainCard");
+            card.innerHTML = `<canvas id="pongCanvas" width="340" height="380"></canvas>`;
             
+            // Pausa estratégica de 100ms para garantir que a tela foi totalmente montada pelo celular
+            setTimeout(processarEtapaInicializacaoMotores, 100);
+        }
+
+        // SEQUÊNCIA 3: Vinculação de variáveis e ativação do loop físico
+        function processarEtapaInicializacaoMotores() {
             canvas = document.getElementById("pongCanvas");
+            if (!canvas) return; // Proteção contra falha estrutural
+            
             ctx = canvas.getContext("2d");
 
             configurarControles();
@@ -214,7 +210,6 @@
                 e.preventDefault();
                 const rect = canvas.getBoundingClientRect();
                 const touchX = e.touches.clientX - rect.left;
-                // Mapeia a proporção do touch baseada na largura real do canvas renderizado
                 const escalaX = 340 / rect.width;
                 jugadorX = (touchX * escalaX) - raqueteLargura / 2;
                 
@@ -286,6 +281,7 @@
         }
 
         function desenhar() {
+            if (!ctx) return;
             ctx.clearRect(0, 0, 340, 380);
 
             ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
@@ -324,6 +320,4 @@
         function checarFimDeJogo() {
             if (placarJogador >= pontosParaVencer || placarBot >= pontosParaVencer) {
                 executando = false;
-                cancelAnimationFrame(animacaoId);
-
         
