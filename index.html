@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ping Pong</title>
+    <title>Desafio</title>
     <style>
         * {
             box-sizing: border-box;
@@ -136,8 +136,7 @@
 <body>
 
     <div class="card" id="mainCard">
-        <h2>Ping Pong 🏓</h2>
-        <p>Insira seu nome para jogar.</p>
+        <p>Insira seu nome para enfrentar o sistema de defesa.</p>
         <input type="text" id="nomeJogador" class="input-nome" placeholder="Digite seu nome" maxlength="15">
         <div id="msgValidacao" class="msg-validacao">Somente letras são permitidas</div>
         <button class="btn-principal" onclick="validarEIniciar()">Iniciar Partida</button>
@@ -148,6 +147,7 @@
         let tabuleiro = ["", "", "", "", "", "", "", "", ""];
         let jogoAtivo = true;
 
+        // Matriz de vitória restaurada com sucesso
         const padroesVitoria = [, [3, 4, 5], [6, 7, 8], // Horizontais, [1, 4, 7], [2, 5, 8], // Verticais, [2, 4, 6]             // Diagonais
         ];
 
@@ -178,7 +178,7 @@
             const card = document.getElementById('mainCard');
             card.innerHTML = `
                 <h2>Sua vez, ${nomeSalvo} (X)</h2>
-                <p>Alinhe três símbolos para vencer IGOR.</p>
+                <p>Alinhe três símbolos para vencer o IGOR.</p>
                 <div class="tabuleiro">
                     <div class="celula" onclick="jogada(0)" id="c0"></div>
                     <div class="celula" onclick="jogada(1)" id="c1"></div>
@@ -220,17 +220,17 @@
             // 1. Tentar vencer imediatamente
             escolha = buscarMelhorMovimento("O");
             
-            // 2. Se não der para vencer, bloquear o jogador (X)
+            // 2. Bloquear o jogador (X)
             if (escolha === -1) {
                 escolha = buscarMelhorMovimento("X");
             }
 
-            // 3. Dominar o centro se estiver disponível
+            // 3. Dominar o centro
             if (escolha === -1 && tabuleiro[4] === "") {
                 escolha = 4;
             }
 
-            // 4. Jogar em um canto vazio estrategicamente
+            // 4. Jogar nos cantos vazios
             if (escolha === -1) {
                 const cantos =;
                 const cantosVazios = cantos.filter(i => tabuleiro[i] === "");
@@ -239,7 +239,7 @@
                 }
             }
 
-            // 5. Jogar em qualquer espaço que sobrou
+            // 5. Jogar em qualquer espaço
             if (escolha === -1) {
                 let vazios = [];
                 tabuleiro.forEach((v, i) => { if (v === "") vazios.push(i); });
@@ -287,21 +287,23 @@
             const card = document.getElementById('mainCard');
             if (res === "vitoria") {
                 card.innerHTML = `
-                    <div class="texto-resultado sucesso">Jogou bem, but. </div>
+                    <div class="texto-resultado sucesso">Jogou bem, but.</div>
                     <button class="btn-reiniciar" onclick="reiniciar()">Reiniciar</button>
                 `;
             } else if (res === "derrota") {
                 card.innerHTML = `
-                    <div class="texto-resultado vermelho">PERDEU BUT 💀</div>
+                    <div class="texto-resultado vermelho">PERDEU BUT</div>
                     <button class="btn-reiniciar" onclick="reiniciar()">Reiniciar</button>
                 `;
             } else {
                 card.innerHTML = `
-                    <div class="texto-resultado sucesso">Empate tático. </div>
+                    <div class="texto-resultado sucesso">Empate tático.</div>
                     <button class="btn-reiniciar" onclick="reiniciar()">Reiniciar</button>
                 `;
             }
         }
 
         function reiniciar() {
-        
+            tabuleiro = ["", "", "", "", "", "", "", "", ""];
+            jogoAtivo = true;
+                
