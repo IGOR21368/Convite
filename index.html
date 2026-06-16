@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonic Retro Runner - Funcionamento Garantido</title>
+    <title>Sonic Retro Runner</title>
     <style>
         * {
             margin: 0;
@@ -20,6 +20,7 @@
             min-height: 100vh;
             overflow: hidden;
             user-select: none;
+            touch-action: manipulation;
         }
 
         /* Janela do Jogo */
@@ -35,7 +36,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* Nuvens e Cenário de Fundo */
+        /* Nuvens do Cenário */
         .sky-scenery {
             position: absolute;
             top: 40px;
@@ -64,7 +65,7 @@
             opacity: 0.7;
         }
 
-        /* Chão Quadriculado e Grama da Green Hill Zone */
+        /* Chão Quadriculado da Green Hill Zone */
         #floor {
             position: absolute;
             bottom: 0;
@@ -97,7 +98,7 @@
         }
         .hud-val { color: #fff; }
 
-        /* Sonic Desenvolvido em CSS */
+        /* Sonic em CSS */
         #sonic {
             width: 50px;
             height: 60px;
@@ -108,13 +109,12 @@
             border-radius: 12px 30px 15px 12px;
             box-shadow: 
                 inset -6px -4px 0 #001aa3,
-                -8px 4px 0 #0033cc, /* Espinhos traseiros */
+                -8px 4px 0 #0033cc, 
                 -12px 14px 0 #0033cc,
-                -4px 44px 0 #e60000, /* Tênis Vermelho Clássico */
+                -4px 44px 0 #e60000, 
                 4px 44px 0 #e60000;
             z-index: 5;
         }
-        /* Rosto e Olho do Sonic */
         #sonic::before {
             content: '';
             position: absolute;
@@ -133,7 +133,7 @@
             box-shadow: -4px -2px 0 #fff;
         }
 
-        /* Estilo Dinâmico para quando o Sonic vira uma Bola Giratória */
+        /* Estado de Bola Giratória do Sonic */
         #sonic.spinning {
             width: 46px;
             height: 46px;
@@ -144,7 +144,7 @@
         }
         #sonic.spinning::before, #sonic.spinning::after { display: none; }
 
-        /* Inimigo Motobug (Robô Joaninha Mecânica) */
+        /* Inimigo Motobug */
         #enemy {
             width: 48px;
             height: 40px;
@@ -154,11 +154,10 @@
             background-color: #e60000;
             border-radius: 24px 24px 8px 8px;
             box-shadow: inset -6px -4px 0 #990000,
-                        -6px 26px 0 #333, /* Rodinha preta inferior */
+                        -6px 26px 0 #333, 
                         6px 26px 0 #333;
             z-index: 5;
         }
-        /* Olho mecânico e pinças do robô */
         #enemy::before {
             content: '';
             position: absolute;
@@ -168,7 +167,7 @@
             border-radius: 4px;
         }
 
-        /* Argola Dourada Clássica */
+        /* Argola Dourada */
         #ring-item {
             width: 24px;
             height: 24px;
@@ -182,7 +181,7 @@
             animation: ringFloat 0.5s ease-in-out infinite alternate;
         }
 
-        /* Tela de Interface Inicial / Fim */
+        /* Tela de Interface */
         #screen-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -201,18 +200,19 @@
             text-shadow: 3px 3px #000;
             letter-spacing: 2px;
         }
-        #screen-overlay p {
+        #screen-overlay button {
             font-size: 18px;
             background: #ffcc00;
             color: #000;
             padding: 12px 25px;
+            border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             box-shadow: 0 4px 0 #b38f00;
         }
 
-        /* Mecânicas de Animação */
+        /* Animações */
         @keyframes scrollBackdrop {
             from { background-position-x: 0; }
             to { background-position-x: -400px; }
@@ -261,7 +261,7 @@
 
         <div id="screen-overlay">
             <h1 id="title-msg">SONIC RUNNER</h1>
-            <p id="action-btn" onclick="startGame()">CLIQUE PARA JOGAR</p>
+            <button id="action-btn" onclick="startGame()">CLIQUE PARA JOGAR</button>
         </div>
     </div>
 
@@ -289,11 +289,19 @@
         let enemyX = 850;
         let ringX = 1100;
 
-        // Comandos de Pulo (PC e Dispositivos Móveis)
+        // Comandos Universais de Pulo
         document.addEventListener('keydown', (e) => { if (e.code === 'Space' || e.code === 'ArrowUp') triggerJump(); });
-        container.addEventListener('touchstart', (e) => { e.preventDefault(); triggerJump(); });
-        container.addEventListener('mousedown', triggerJump);
+        container.addEventListener('touchstart', (e) => { 
+            if(isPlaying) {
+                e.preventDefault(); 
+                triggerJump(); 
+            }
+        }, { passive: false });
+        container.addEventListener('mousedown', () => { if(isPlaying) triggerJump(); });
 
         function triggerJump() {
             if (!isPlaying || isJumping) return;
+            isJumping = true;
+            sonic.classList.add('spinning', 'jumping');
+
         
