@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Desafio Clássico</title>
+    <title>Ping Pong</title>
     <style>
         * {
             box-sizing: border-box;
@@ -41,10 +41,10 @@
         }
 
         h2 {
-            font-size: 22px;
+            font-size: 24px;
             color: #1a1a1a;
             margin-bottom: 12px;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: -0.5px;
         }
 
@@ -143,7 +143,7 @@
 
     <div class="card" id="mainCard">
         <div id="telaLogin">
-            <h2>Desafio de Reflexo</h2>
+            <h2>Ping Pong 🏓</h2>
             <p>Insira seu nome para enfrentar o sistema de defesa.</p>
             <input type="text" id="nomeJogador" class="input-nome" placeholder="Digite seu nome" maxlength="15">
             <div id="msgValidacao" class="msg-validacao">Somente letras são permitidas</div>
@@ -157,9 +157,7 @@
 
     <script>
         let nomeJogadorSalvo = "";
-        let canvas = document.getElementById("pongCanvas");
-        let ctx = canvas.getContext("2d");
-        let animacaoId;
+        let canvas, ctx, animacaoId;
 
         const raqueteAltura = 10;
         const raqueteLargura = 70;
@@ -202,6 +200,9 @@
             document.getElementById("telaLogin").style.display = "none";
             document.getElementById("arena").style.display = "flex";
             
+            canvas = document.getElementById("pongCanvas");
+            ctx = canvas.getContext("2d");
+
             configurarControles();
             resetarBola();
             executando = true;
@@ -212,26 +213,29 @@
             canvas.addEventListener("touchmove", (e) => {
                 e.preventDefault();
                 const rect = canvas.getBoundingClientRect();
-                const touchX = e.touches[0].clientX - rect.left;
-                jugadorX = touchX - raqueteLargura / 2;
+                const touchX = e.touches.clientX - rect.left;
+                // Mapeia a proporção do touch baseada na largura real do canvas renderizado
+                const escalaX = 340 / rect.width;
+                jugadorX = (touchX * escalaX) - raqueteLargura / 2;
                 
                 if (jugadorX < 0) jugadorX = 0;
-                if (jugadorX + raqueteLargura > canvas.width) jugadorX = canvas.width - raqueteLargura;
+                if (jugadorX + raqueteLargura > 340) jugadorX = 340 - raqueteLargura;
             }, { passive: false });
 
             canvas.addEventListener("mousemove", (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const mouseX = e.clientX - rect.left;
-                jugadorX = mouseX - raqueteLargura / 2;
+                const escalaX = 340 / rect.width;
+                jugadorX = (mouseX * escalaX) - raqueteLargura / 2;
 
                 if (jugadorX < 0) jugadorX = 0;
-                if (jugadorX + raqueteLargura > canvas.width) jugadorX = canvas.width - raqueteLargura;
+                if (jugadorX + raqueteLargura > 340) jugadorX = 340 - raqueteLargura;
             });
         }
 
         function resetarBola() {
-            bolaX = canvas.width / 2;
-            bolaY = canvas.height / 2;
+            bolaX = 170;
+            bolaY = 190;
             bolaVelX = (Math.random() > 0.5 ? 3 : -3);
             bolaVelY = 3;
         }
@@ -242,7 +246,7 @@
             bolaX += bolaVelX;
             bolaY += bolaVelY;
 
-            if (bolaX - bolaRaio < 0 || bolaX + bolaRaio > canvas.width) {
+            if (bolaX - bolaRaio < 0 || bolaX + bolaRaio > 340) {
                 bolaVelX = -bolaVelX;
             }
 
@@ -254,7 +258,7 @@
             }
 
             if (botX < 0) botX = 0;
-            if (botX + raqueteLargura > canvas.width) botX = canvas.width - raqueteLargura;
+            if (botX + raqueteLargura > 340) botX = 340 - raqueteLargura;
 
             if (bolaY - bolaRaio <= raqueteAltura) {
                 if (bolaX > botX && bolaX < botX + raqueteLargura) {
@@ -268,13 +272,13 @@
                 }
             }
 
-            if (bolaY + bolaRaio >= canvas.height - raqueteAltura) {
+            if (bolaY + bolaRaio >= 380 - raqueteAltura) {
                 if (bolaX > jugadorX && bolaX < jugadorX + raqueteLargura) {
                     bolaVelY = -bolaVelY;
-                    bolaY = canvas.height - raqueteAltura - bolaRaio;
+                    bolaY = 380 - raqueteAltura - bolaRaio;
                     bolaVelX *= 1.05;
                     bolaVelY *= 1.05;
-                } else if (bolaY > canvas.height) {
+                } else if (bolaY > 380) {
                     placarBot++;
                     checarFimDeJogo();
                 }
@@ -282,26 +286,26 @@
         }
 
         function desenhar() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, 340, 380);
 
             ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(0, canvas.height / 2);
-            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.moveTo(0, 190);
+            ctx.lineTo(340, 190);
             ctx.stroke();
 
             ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
             ctx.font = "bold 40px sans-serif";
             ctx.textAlign = "center";
-            ctx.fillText(placarBot, canvas.width / 2, canvas.height / 2 - 30);
-            ctx.fillText(placarJogador, canvas.width / 2, canvas.height / 2 + 60);
+            ctx.fillText(placarBot, 170, 160);
+            ctx.fillText(placarJogador, 170, 250);
 
             ctx.fillStyle = "#333333";
             ctx.fillRect(botX, 0, raqueteLargura, raqueteAltura);
 
             ctx.fillStyle = "#d4a373";
-            ctx.fillRect(jugadorX, canvas.height - raqueteAltura, raqueteLargura, raqueteAltura);
+            ctx.fillRect(jugadorX, 370, raqueteLargura, raqueteAltura);
 
             ctx.fillStyle = "#ffffff";
             ctx.beginPath();
