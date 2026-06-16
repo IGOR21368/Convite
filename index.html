@@ -144,7 +144,7 @@
 
     <script>
         let nomeSalvo = "";
-        let tabuleiro = ["", "", "", "", "", "", "", "", ""];
+        let t = ["", "", "", "", "", "", "", "", ""];
         let jogoAtivo = true;
 
         function validarEIniciar() {
@@ -190,9 +190,9 @@
         }
 
         function jogada(index) {
-            if (tabuleiro[index] !== "" || !jogoAtivo) return;
+            if (t[index] !== "" || !jogoAtivo) return;
 
-            tabuleiro[index] = "X";
+            t[index] = "X";
             document.getElementById(`c${index}`).innerText = "X";
             document.getElementById(`c${index}`).classList.add('xis');
 
@@ -201,48 +201,42 @@
                 return;
             }
 
-            if (!tabuleiro.includes("")) {
+            if (!t.includes("")) {
                 concluirJogo("empate");
                 return;
             }
 
             jogoAtivo = false;
-            setTimeout(jogadaBotInteligente, 350);
+            setTimeout(jogadaBot, 350);
         }
 
-        function jogadaBotInteligente() {
+        function jogadaBot() {
             let escolha = -1;
 
-            // 1. Tentar vencer imediatamente
-            escolha = buscarMelhorMovimento("O");
-            
-            // 2. Bloquear o jogador (X)
-            if (escolha === -1) {
-                escolha = buscarMelhorMovimento("X");
-            }
+            // 1. Tentar vencer ou bloquear por varredura direta e por extenso
+            escolha = testarLinhagem("O"); // Inteligência busca vencer
+            if (escolha === -1) escolha = testarLinhagem("X"); // Inteligência busca bloquear você
 
-            // 3. Dominar o centro
-            if (escolha === -1 && tabuleiro[4] === "") {
-                escolha = 4;
-            }
+            // 2. Se não houver risco imediato, pega o centro
+            if (escolha === -1 && t[4] === "") escolha = 4;
 
-            // 4. Jogar nos cantos vazios estrategicamente
+            // 3. Se o centro estiver ocupado, joga em qualquer canto vazio
             if (escolha === -1) {
-                const cantos =;
-                const cantosVazios = cantos.filter(i => tabuleiro[i] === "");
-                if (cantosVazios.length > 0) {
-                    escolha = cantosVazios[Math.floor(Math.random() * cantosVazios.length)];
+                let cantos =;
+                let disponiveis = cantos.filter(i => t[i] === "");
+                if (disponiveis.length > 0) {
+                    escolha = disponiveis[Math.floor(Math.random() * disponiveis.length)];
                 }
             }
 
-            // 5. Jogar em qualquer espaço restante
+            // 4. Último caso: joga na primeira casa livre que encontrar
             if (escolha === -1) {
                 let vazios = [];
-                tabuleiro.forEach((v, i) => { if (v === "") vazios.push(i); });
+                t.forEach((v, i) => { if (v === "") vazios.push(i); });
                 escolha = vazios[Math.floor(Math.random() * vazios.length)];
             }
 
-            tabuleiro[escolha] = "O";
+            t[escolha] = "O";
             const elemento = document.getElementById(`c${escolha}`);
             if (elemento) {
                 elemento.innerText = "O";
@@ -254,7 +248,7 @@
                 return;
             }
 
-            if (!tabuleiro.includes("")) {
+            if (!t.includes("")) {
                 concluirJogo("empate");
                 return;
             }
@@ -262,44 +256,45 @@
             jogoAtivo = true;
         }
 
-        function buscarMelhorMovimento(simbolo) {
-            // Varredura direta de linhas, colunas e diagonais para evitar matrizes apagadas pelo chat
-            const linhas = [, [3, 4, 5], [6, 7, 8], // Horizontais, [1, 4, 7], [2, 5, 8], // Verticais, [2, 4, 6]             // Diagonais
-            ];
+        // Função de verificação por extenso para garantir tolerância zero a falhas
+        function testarLinhagem(s) {
+            // Verifica Linhas Horizontais
+            if (t[0] === s && t[1] === s && t[2] === "") return 2;
+            if (t[0] === s && t[2] === s && t[1] === "") return 1;
+            if (t[1] === s && t[2] === s && t[0] === "") return 0;
 
-            for (let padrao of linhas) {
-                const marcas = padrao.map(i => tabuleiro[i]);
-                const contagemSimbolo = marcas.filter(m => m === simbolo).length;
-                const contagemVazio = marcas.filter(m => m === "").length;
+            if (t[3] === s && t[4] === s && t[5] === "") return 5;
+            if (t[3] === s && t[5] === s && t[4] === "") return 4;
+            if (t[4] === s && t[5] === s && t[3] === "") return 3;
 
-                if (contagemSimbolo === 2 && contagemVazio === 1) {
-                    return padrao[marcas.indexOf("")];
-                }
-            }
+            if (t[6] === s && t[7] === s && t[8] === "") return 8;
+            if (t[6] === s && t[8] === s && t[7] === "") return 7;
+            if (t[7] === s && t[8] === s && t[6] === "") return 6;
+
+            // Verifica Colunas Verticais
+            if (t[0] === s && t[3] === s && t[6] === "") return 6;
+            if (t[0] === s && t[6] === s && t[3] === "") return 3;
+            if (t[3] === s && t[6] === s && t[0] === "") return 0;
+
+            if (t[1] === s && t[4] === s && t[7] === "") return 7;
+            if (t[1] === s && t[7] === s && t[4] === "") return 4;
+            if (t[4] === s && t[7] === s && t[1] === "") return 1;
+
+            if (t[2] === s && t[5] === s && t[8] === "") return 8;
+            if (t[2] === s && t[8] === s && t[5] === "") return 5;
+            if (t[5] === s && t[8] === s && t[2] === "") return 2;
+
+            // Verifica Diagonais Cruciais
+            if (t[0] === s && t[4] === s && t[8] === "") return 8;
+            if (t[0] === s && t[8] === s && t[4] === "") return 4;
+            if (t[4] === s && t[8] === s && t[0] === "") return 0;
+
+            if (t[2] === s && t[4] === s && t[6] === "") return 6;
+            if (t[2] === s && t[6] === s && t[4] === "") return 4;
+            if (t[4] === s && t[6] === s && t[2] === "") return 2;
+
             return -1;
         }
 
         function checarVitoria(s) {
-            const linhas = [, [3, 4, 5], [6, 7, 8],
-, [1, 4, 7], [2, 5, 8],
-, [2, 4, 6]
-            ];
-            return linhas.some(m => m.every(i => tabuleiro[i] === s));
-        }
-
-        function concluirJogo(res) {
-            const card = document.getElementById('mainCard');
-            if (res === "vitoria") {
-                card.innerHTML = `
-                    <div class="texto-resultado sucesso">Jogou bem, but.</div>
-                    <button class="btn-reiniciar" onclick="reiniciar()">Reiniciar</button>
-                `;
-            } else if (res === "derrota") {
-                card.innerHTML = `
-                    <div class="texto-resultado vermelho">PERDEU BUT</div>
-                    <button class="btn-reiniciar" onclick="reiniciar()">Reiniciar</button>
-                `;
-            } else {
-                card.innerHTML = `
-                    <div class="texto-resultado sucesso">Empate tático.</div>
         
