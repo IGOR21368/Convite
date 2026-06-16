@@ -3,322 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Retro Mobile Racer</title>
+    <title>Desafio Clássico</title>
     <style>
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial Black', Gadget, sans-serif;
-            -webkit-user-select: none;
-            user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: #222;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            background-color: #ffffff;
+            padding: 15px;
             overflow: hidden;
             touch-action: none;
         }
 
-        #game-container {
-            width: 100%;
-            max-width: 450px;
-            height: 100vh;
-            background-color: #115511;
-            position: relative;
-            overflow: hidden;
-            border: 4px solid #444;
-        }
-
-        #hud {
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.85);
-            color: #fff;
-            padding: 10px;
+        .card {
+            background: #ffffff;
+            padding: 35px 25px;
             border-radius: 20px;
-            font-size: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
             text-align: center;
-            z-index: 30;
-            border: 2px solid #ffcc00;
-            width: 85%;
-        }
-        .hud-val { color: #ffcc00; }
-
-        /* Área Visual da Pista */
-        #screen-area {
+            max-width: 400px;
             width: 100%;
-            height: 60%;
-            position: relative;
-            background-color: #2c3e50;
-            overflow: hidden;
-        }
-
-        /* Estrada Estilizada */
-        #road {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 100%;
-            background-color: #444;
-            border-left: 8px dashed #fff;
-            border-right: 8px dashed #fff;
-        }
-
-        /* Efeito de movimento das faixas nas curvas */
-        .road-moving {
-            animation: moveRoad 0.5s linear infinite;
-        }
-
-        @keyframes moveRoad {
-            0% { background-position-y: 0px; }
-            100% { background-position-y: 40px; }
-        }
-
-        /* Carro do Jogador */
-        #player-car {
-            width: 40px;
-            height: 65px;
-            background-color: #ffcc00;
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 6px;
-            z-index: 10;
-            box-shadow: inset 0 5px 0 #997a00, 0 4px 8px rgba(0,0,0,0.4);
-            transition: left 0.05s linear;
-        }
-        #player-car::before {
-            content: '';
-            position: absolute;
-            top: 12px; left: 4px; width: 32px; height: 15px;
-            background: #222; border-radius: 4px;
-        }
-
-        /* Obstáculo */
-        #obstacle {
-            width: 35px;
-            height: 35px;
-            background-color: #e74c3c;
-            border: 4px solid #fff;
-            position: absolute;
-            top: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9;
-            display: none;
-        }
-
-        /* Painel de Controles */
-        #control-panel {
-            width: 100%;
-            height: 40%;
-            background: linear-gradient(to bottom, #2c3e50, #1a252f);
-            border-top: 6px solid #ffcc00;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            z-index: 25;
-        }
-
-        #pedal-btn {
-            width: 90px;
-            height: 130px;
-            background: linear-gradient(to bottom, #555, #222);
-            border: 4px solid #888;
-            border-radius: 15px 15px 5px 5px;
-            box-shadow: 0 6px 0 #111;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #ffcc00;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .arrow-btn {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(to bottom, #e74c3c, #c0392b);
-            border: 3px solid #fff;
-            border-radius: 50%;
-            box-shadow: 0 5px 0 #7f2d21;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 30px;
-        }
-
-        /* Menus */
-        #screen-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 60%;
-            background: rgba(0,0,0,0.9);
+            min-height: 350px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #fff;
-            z-index: 40;
         }
-        #screen-overlay h1 {
-            color: #ffcc00;
-            font-size: 32px;
-            margin-bottom: 20px;
+
+        h2 {
+            font-size: 22px;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
         }
-        #start-btn {
-            font-size: 18px;
-            background: #2ecc71;
-            color: #fff;
-            padding: 12px 40px;
+
+        p {
+            font-size: 15px;
+            color: #777777;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .input-nome {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+            margin-bottom: 5px;
+            text-align: center;
+            transition: border-color 0.2s ease;
+        }
+
+        .input-nome:focus {
+            border-color: #d4a373;
+        }
+
+        .msg-validacao {
+            color: #dc3545;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            height: 18px;
+            visibility: hidden;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
             border: none;
-            border-radius: 30px;
-            font-weight: bold;
-            box-shadow: 0 5px 0 #27ae60;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-principal {
+            background-color: #d4a373;
+            color: white;
+        }
+
+        .btn-reiniciar {
+            background-color: #1a1a1a;
+            color: white;
+            margin-top: 20px;
+            max-width: 200px;
+        }
+
+        .texto-resultado {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .texto-resultado.vermelho {
+            color: #dc3545;
+        }
+
+        .texto-resultado.sucesso {
+            color: #1a1a1a;
+        }
+
+        #arena {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        canvas {
+            background-color: #111111;
+            border-radius: 12px;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 340px;
+            height: 380px;
+            touch-action: none;
         }
     </style>
 </head>
 <body>
 
-    <div id="game-container">
-        <div id="hud">
-            PONTOS: <span id="score-val" class="hud-val">0</span> | 
-            VEL: <span id="speed-val" class="hud-val">0 km/h</span>
+    <div class="card" id="mainCard">
+        <div id="telaLogin">
+            <h2>Desafio de Reflexo</h2>
+            <p>Insira seu nome para enfrentar o sistema de defesa.</p>
+            <input type="text" id="nomeJogador" class="input-nome" placeholder="Digite seu nome" maxlength="15">
+            <div id="msgValidacao" class="msg-validacao">Somente letras são permitidas</div>
+            <button class="btn-principal" onclick="validarEIniciar()">Iniciar Partida</button>
         </div>
 
-        <div id="screen-area">
-            <div id="road"></div>
-            <div id="player-car"></div>
-            <div id="obstacle"></div>
-
-            <div id="screen-overlay">
-                <h1 id="menu-title">RETRO RACER</h1>
-                <button id="start-btn" onclick="startGameDirect()">TOQUE PARA INICIAR</button>
-            </div>
-        </div>
-
-        <div id="control-panel">
-            <div>
-                <button id="pedal-btn">PEDAL</button>
-            </div>
-            <div style="display: flex; gap: 15px;">
-                <button id="left-btn" class="arrow-btn">◀</button>
-                <button id="right-btn" class="arrow-btn">▶</button>
-            </div>
+        <div id="arena">
+            <canvas id="pongCanvas" width="340" height="380"></canvas>
         </div>
     </div>
 
     <script>
-        const overlay = document.getElementById('screen-overlay');
-        const menuTitle = document.getElementById('menu-title');
-        const startBtn = document.getElementById('start-btn');
-        const scoreVal = document.getElementById('score-val');
-        const speedVal = document.getElementById('speed-val');
-        
-        const car = document.getElementById('player-car');
-        const obstacle = document.getElementById('obstacle');
-        const road = document.getElementById('road');
+        let nomeJogadorSalvo = "";
+        let canvas = document.getElementById("pongCanvas");
+        let ctx = canvas.getContext("2d");
+        let animacaoId;
 
-        const pedal = document.getElementById('pedal-btn');
-        const btnLeft = document.getElementById('left-btn');
-        const btnRight = document.getElementById('right-btn');
+        const raqueteAltura = 10;
+        const raqueteLargura = 70;
+        const bolaRaio = 6;
 
-        let isPlaying = false;
-        let loopInterval;
-        let score = 0;
-        let speed = 0;
-        let carPos = 50; // Em porcentagem (50% = centro)
-        let obstacleY = -50;
-        let obstacleX = 50;
+        let jugadorX = (340 - raqueteLargura) / 2;
+        let botX = (340 - raqueteLargura) / 2;
         
-        let isAccelerating = false;
-        let isMovingLeft = false;
-        let isMovingRight = false;
+        let bolaX = 170;
+        let bolaY = 190;
+        let bolaVelX = 3;
+        let bolaVelY = 3;
 
-        // Comandos de Toque Mobile Diretos
-        pedal.addEventListener('touchstart', (e) => { e.preventDefault(); isAccelerating = true; });
-        pedal.addEventListener('touchend', () => isAccelerating = false);
-        
-        btnLeft.addEventListener('touchstart', (e) => { e.preventDefault(); isMovingLeft = true; });
-        btnLeft.addEventListener('touchend', () => isMovingLeft = false);
-        
-        btnRight.addEventListener('touchstart', (e) => { e.preventDefault(); isMovingRight = true; });
-        btnRight.addEventListener('touchend', () => isMovingRight = false);
+        let placarJogador = 0;
+        let placarBot = 0;
+        const pontosParaVencer = 3;
+        let executando = false;
 
-        function startGameDirect() {
-            isPlaying = true;
-            score = 0;
-            speed = 0;
-            carPos = 50;
-            obstacleY = -50;
+        function validarEIniciar() {
+            const input = document.getElementById('nomeJogador');
+            const msg = document.getElementById('msgValidacao');
+            const texto = input.value.trim();
+            const apenasLetras = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
+
+            if (texto === "") {
+                msg.innerText = "Por favor, digite seu nome!";
+                msg.style.visibility = "visible";
+                return;
+            }
+
+            if (!apenasLetras.test(texto)) {
+                msg.innerText = "Somente letras são permitidas";
+                msg.style.visibility = "visible";
+                return;
+            }
+
+            msg.style.visibility = "hidden";
+            nomeJogadorSalvo = texto;
+
+            document.getElementById("telaLogin").style.display = "none";
+            document.getElementById("arena").style.display = "flex";
             
-            car.style.left = '50%';
-            obstacle.style.display = 'block';
-            overlay.style.display = 'none';
-            
-            clearInterval(loopInterval);
-            loopInterval = setInterval(gameEngine, 20);
+            configurarControles();
+            resetarBola();
+            executando = true;
+            loopJogo();
         }
 
-        function gameEngine() {
-            if (!isPlaying) return;
+        function configurarControles() {
+            canvas.addEventListener("touchmove", (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const touchX = e.touches[0].clientX - rect.left;
+                jugadorX = touchX - raqueteLargura / 2;
+                
+                if (jugadorX < 0) jugadorX = 0;
+                if (jugadorX + raqueteLargura > canvas.width) jugadorX = canvas.width - raqueteLargura;
+            }, { passive: false });
 
-            // Aceleração
-            if (isAccelerating) {
-                if (speed < 160) speed += 2;
-                score += 1;
-            } else {
-                if (speed > 0) speed -= 3;
+            canvas.addEventListener("mousemove", (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                jugadorX = mouseX - raqueteLargura / 2;
+
+                if (jugadorX < 0) jugadorX = 0;
+                if (jugadorX + raqueteLargura > canvas.width) jugadorX = canvas.width - raqueteLargura;
+            });
+        }
+
+        function resetarBola() {
+            bolaX = canvas.width / 2;
+            bolaY = canvas.height / 2;
+            bolaVelX = (Math.random() > 0.5 ? 3 : -3);
+            bolaVelY = 3;
+        }
+
+        function atualizar() {
+            if (!executando) return;
+
+            bolaX += bolaVelX;
+            bolaY += bolaVelY;
+
+            if (bolaX - bolaRaio < 0 || bolaX + bolaRaio > canvas.width) {
+                bolaVelX = -bolaVelX;
             }
 
-            // Movimento Lateral
-            if (speed > 10) {
-                if (isMovingLeft && carPos > 30) carPos -= 1.5;
-                if (isMovingRight && carPos < 70) carPos += 1.5;
-            }
-            car.style.left = carPos + '%';
-
-            scoreVal.innerText = score;
-            speedVal.innerText = speed + " km/h";
-
-            // Movimento do Obstáculo baseado na velocidade
-            if (speed > 0) {
-                obstacleY += (speed * 0.06);
+            let centroBot = botX + raqueteLargura / 2;
+            if (centroBot < bolaX - 10) {
+                botX += 2.8;
+            } else if (centroBot > bolaX + 10) {
+                botX -= 2.8;
             }
 
-            // Reseta obstáculo se sair por baixo
-            if (obstacleY > 450) {
-                obstacleY = -50;
-                obstacleX = 35 + Math.random() * 30; // Gera posição aleatória na pista
-                obstacle.style.left = obstacleX + '%';
-            }
-            obstacle.style.top = obstacleY + 'px';
+            if (botX < 0) botX = 0;
+            if (botX + raqueteLargura > canvas.width) botX = canvas.width - raqueteLargura;
 
-            // Verificação Simplificada de Colisão
-            if (obstacleY > 300 && obstacleY < 370) {
-                if (Math.abs(carPos - obstacleX) < 8) {
-                    endGame();
+            if (bolaY - bolaRaio <= raqueteAltura) {
+                if (bolaX > botX && bolaX < botX + raqueteLargura) {
+                    bolaVelY = -bolaVelY;
+                    bolaY = raqueteAltura + bolaRaio;
+                    bolaVelX *= 1.05;
+                    bolaVelY *= 1.05;
+                } else if (bolaY < 0) {
+                    placarJogador++;
+                    checarFimDeJogo();
+                }
+            }
+
+            if (bolaY + bolaRaio >= canvas.height - raqueteAltura) {
+                if (bolaX > jugadorX && bolaX < jugadorX + raqueteLargura) {
+                    bolaVelY = -bolaVelY;
+                    bolaY = canvas.height - raqueteAltura - bolaRaio;
+                    bolaVelX *= 1.05;
+                    bolaVelY *= 1.05;
+                } else if (bolaY > canvas.height) {
+                    placarBot++;
+                    checarFimDeJogo();
                 }
             }
         }
 
-        function endGame() {
-            isPlaying = false;
-            clearInterval(loopInterval);
-            menuTitle.innerText = "FIM DE JOGO!";
-            startBtn.innerText = "TENTAR DE NOVO";
-            overlay.style.display = 'flex';
-            obstacle.style.display = 'none';
+        function desenhar() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+
+            ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+            ctx.font = "bold 40px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(placarBot, canvas.width / 2, canvas.height / 2 - 30);
+            ctx.fillText(placarJogador, canvas.width / 2, canvas.height / 2 + 60);
+
+            ctx.fillStyle = "#333333";
+            ctx.fillRect(botX, 0, raqueteLargura, raqueteAltura);
+
+            ctx.fillStyle = "#d4a373";
+            ctx.fillRect(jugadorX, canvas.height - raqueteAltura, raqueteLargura, raqueteAltura);
+
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.arc(bolaX, bolaY, bolaRaio, 0, Math.PI * 2);
+            ctx.fill();
         }
+
+        function loopJogo() {
+            atualizar();
+            desenhar();
+            if (executando) {
+                animacaoId = requestAnimationFrame(loopJogo);
+            }
+        }
+
+        function checarFimDeJogo() {
+            if (placarJogador >= pontosParaVencer || placarBot >= pontosParaVencer) {
+                executando = false;
+                cancelAnimationFrame(animacaoId);
+
         
