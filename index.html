@@ -23,17 +23,15 @@
             overflow: hidden;
         }
 
-        /* Grade Principal que organiza as abas idênticas à imagem */
         .dashboard {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             width: 100%;
-            max-width: 460px; /* Otimizado para telas de smartphones */
+            max-width: 460px;
             max-height: 95vh;
         }
 
-        /* Estrutura de cada Aba Visual */
         .window {
             background-color: #000000;
             border: 1px solid #00ff66;
@@ -46,7 +44,6 @@
             height: 190px;
         }
 
-        /* Classe injetada pelo JavaScript para fazer a aba "derreter/deletar" */
         .window.dissolve {
             opacity: 0;
             filter: blur(10px) contrast(0);
@@ -77,7 +74,6 @@
             align-items: center;
         }
 
-        /* Estilo da Aba de Texto Fluido em Alta Velocidade */
         .text-stream {
             width: 100%;
             height: 100%;
@@ -88,7 +84,6 @@
             text-align: left;
         }
 
-        /* Barra de Progresso no Rodapé */
         .footer-system {
             grid-column: span 2;
             display: flex;
@@ -124,7 +119,7 @@
             display: none;
             position: fixed;
             color: #00ff66;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             text-align: center;
             letter-spacing: 1px;
@@ -135,7 +130,6 @@
 <body>
 
     <div class="dashboard" id="mainGrid">
-        <!-- ABA 1: CONSOLE DE CÓDIGO PARALELO (FLUIDO) -->
         <div class="window" id="w1">
             <div class="window-header">Program Console</div>
             <div class="window-content">
@@ -143,23 +137,20 @@
             </div>
         </div>
 
-        <!-- ABA 2: RENDERIZAÇÃO NEURAL DINÂMICA (CANVAS) -->
         <div class="window" id="w2">
             <div class="window-header">Neural Network</div>
             <div class="window-content">
-                <canvas id="neuralCanvas" style="width:100%; height:100%;"></canvas>
+                <canvas id="neuralCanvas"></canvas>
             </div>
         </div>
 
-        <!-- ABA 3: GRÁFICO ESTÁTICO DE ALTA FIDELIDADE (SENÓIDE) -->
         <div class="window" id="w3">
             <div class="window-header">System Analytics</div>
             <div class="window-content">
-                <canvas id="vectorCanvas" style="width:100%; height:100%;"></canvas>
+                <canvas id="vectorCanvas"></canvas>
             </div>
         </div>
 
-        <!-- ABA 4: OPERAÇÕES DO ANDROID KERNEL -->
         <div class="window" id="w4">
             <div class="window-header">Android Subsystem</div>
             <div class="window-content">
@@ -167,7 +158,6 @@
             </div>
         </div>
 
-        <!-- BARRA DE CARREGAMENTO DO SISTEMA PRINCIPAL -->
         <div class="footer-system" id="footerBar">
             <div class="progress-bar">
                 <div class="progress-fill" id="mainProgress"></div>
@@ -182,7 +172,6 @@
     </div>
 
     <script>
-        // DADOS TÉCNICOS PARA AS ABAS DE FLUXO DE TEXTO
         const codePhrases = [
             "get: function() { return d(f), e },",
             "set: function(a) { d(f), e = a },",
@@ -207,7 +196,6 @@
             "[SUCCESS] Android sub-runtime hooked into secure loop handler."
         ];
 
-        // CONFIGURAÇÃO DA ABA 1 E ABA 4 (FLUXO DE TEXTO SIMULTÂNEO)
         const consoleElem = document.getElementById("consoleStream");
         const androidElem = document.getElementById("androidStream");
 
@@ -217,7 +205,7 @@
             if (consoleElem.innerHTML.split("<br>").length > 13) {
                 consoleElem.innerHTML = consoleElem.innerHTML.split("<br>").slice(1).join("<br>");
             }
-        }, 150); // Velocidade do console de código
+        }, 120);
 
         setInterval(() => {
             const randAndroid = androidPhrases[Math.floor(Math.random() * androidPhrases.length)];
@@ -225,26 +213,26 @@
             if (androidElem.innerHTML.split("<br>").length > 13) {
                 androidElem.innerHTML = androidElem.innerHTML.split("<br>").slice(1).join("<br>");
             }
-        }, 220); // Velocidade do console Android
+        }, 180);
 
-        // CONFIGURAÇÃO DA ABA 2 (REDE NEURAL EM TEMPO REAL VIA CANVAS)
         const nCanvas = document.getElementById("neuralCanvas");
         const nCtx = nCanvas.getContext("2d");
         nCanvas.width = 180;
         nCanvas.height = 150;
 
         let nodes = [];
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < 10; i++) {
             nodes.push({
-                x: Math.random() * nCanvas.width,
-                y: Math.random() * nCanvas.height,
-                vx: (Math.random() - 0.5) * 1.2,
-                vy: (Math.random() - 0.5) * 1.2
+                x: Math.random() * 180,
+                y: Math.random() * 150,
+                vx: (Math.random() - 0.5) * 1.5,
+                vy: (Math.random() - 0.5) * 1.5
             });
         }
 
         function drawNeuralNetwork() {
-            nCtx.clearRect(0, 0, nCanvas.width, nCanvas.height);
+            if (!nCtx) return;
+            nCtx.clearRect(0, 0, 180, 150);
             nCtx.fillStyle = "#00ff66";
             nCtx.strokeStyle = "rgba(0, 255, 102, 0.15)";
             nCtx.lineWidth = 1;
@@ -253,8 +241,8 @@
                 node.x += node.vx;
                 node.y += node.vy;
 
-                if (node.x < 0 || node.x > nCanvas.width) node.vx = -node.vx;
-                if (node.y < 0 || node.y > nCanvas.height) node.vy = -node.vy;
+                if (node.x < 0 || node.x > 180) node.vx = -node.vx;
+                if (node.y < 0 || node.y > 150) node.vy = -node.vy;
 
                 nCtx.beginPath();
                 nCtx.arc(node.x, node.y, 2, 0, Math.PI * 2);
@@ -264,7 +252,7 @@
             for (let i = 0; i < nodes.length; i++) {
                 for (let j = i + 1; j < nodes.length; j++) {
                     let dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-                    if (dist < 45) {
+                    if (dist < 50) {
                         nCtx.beginPath();
                         nCtx.moveTo(nodes[i].x, nodes[i].y);
                         nCtx.lineTo(nodes[j].x, nodes[j].y);
@@ -276,10 +264,41 @@
         }
         drawNeuralNetwork();
 
-        // CONFIGURAÇÃO DA ABA 3 (GRÁFICO SENOIDAL ESTÁTICO DE ALTA FIDELIDADE)
         const vCanvas = document.getElementById("vectorCanvas");
         const vCtx = vCanvas.getContext("2d");
         vCanvas.width = 180;
         vCanvas.height = 150;
 
-                
+        let offset = 0;
+        function drawStaticWave() {
+            if (!vCtx) return;
+            vCtx.clearRect(0, 0, 180, 150);
+            vCtx.strokeStyle = "#00ff66";
+            vCtx.lineWidth = 1.5;
+            vCtx.beginPath();
+            
+            for (let x = 0; x < 180; x++) {
+                let y = 75 + Math.sin(x * 0.1 + offset) * 25 * Math.cos(x * 0.03) + Math.sin(x * 0.4) * 5;
+                if (x === 0) vCtx.moveTo(x, y);
+                else vCtx.lineTo(x, y);
+            }
+            vCtx.stroke();
+            offset += 0.05; // Faz o gráfico senoidal se mover de forma analítica e realista
+            requestAnimationFrame(drawStaticWave);
+        }
+        drawStaticWave();
+
+        const progressFill = document.getElementById("mainProgress");
+        let percent = 0;
+
+        const progressInterval = setInterval(() => {
+            percent++;
+            progressFill.style.width = percent + "%";
+
+            if (percent >= 100) {
+                clearInterval(progressInterval);
+                executarSequenciaDelecaoDerretimento();
+            }
+        }, 90);
+
+        
