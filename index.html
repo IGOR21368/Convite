@@ -19,21 +19,19 @@
             align-items: center;
             min-height: 100vh;
             background-color: #ffffff;
-            padding: 15px;
-            overflow: hidden;
-            touch-action: none;
+            padding: 20px;
         }
 
         .card {
             background: #ffffff;
-            padding: 35px 25px;
+            padding: 40px 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
             border: 1px solid rgba(0, 0, 0, 0.02);
             text-align: center;
             max-width: 400px;
             width: 100%;
-            min-height: 350px;
+            min-height: 320px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -76,7 +74,7 @@
             font-weight: 600;
             margin-bottom: 15px;
             height: 18px;
-            visibility: hidden;
+            display: none;
         }
 
         button {
@@ -102,29 +100,37 @@
             max-width: 200px;
         }
 
+        .tabuleiro {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            width: 240px;
+            height: 240px;
+        }
+
+        .celula {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .celula.xis { color: #d4a373; }
+        .celula.bola { color: #6c757d; }
+
         .texto-resultado {
             font-size: 24px;
             font-weight: 700;
             letter-spacing: -0.5px;
         }
-
-        .texto-resultado.vermelho {
-            color: #dc3545;
-        }
-
-        .texto-resultado.sucesso {
-            color: #1a1a1a;
-        }
-
-        canvas {
-            background-color: #111111;
-            border-radius: 12px;
-            box-shadow: inset 0 4px 10px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 340px;
-            height: 380px;
-            touch-action: none;
-        }
+        .texto-resultado.vermelho { color: #dc3545; }
+        .texto-resultado.sucesso { color: #1a1a1a; }
     </style>
 </head>
 <body>
@@ -134,31 +140,15 @@
         <p>Insira seu nome para enfrentar o sistema de defesa.</p>
         <input type="text" id="nomeJogador" class="input-nome" placeholder="Digite seu nome" maxlength="15">
         <div id="msgValidacao" class="msg-validacao">Somente letras são permitidas</div>
-        <button class="btn-principal" onclick="processarEtapaValidacao()">Iniciar Partida</button>
+        <button class="btn-principal" onclick="validarEIniciar()">Iniciar Partida</button>
     </div>
 
     <script>
-        let nomeJogadorSalvo = "";
-        let canvas, ctx, animacaoId;
+        let nomeSalvo = "";
+        let tabuleiro = ["", "", "", "", "", "", "", "", ""];
+        let jogoAtivo = true;
 
-        const raqueteAltura = 10;
-        const raqueteLargura = 70;
-        const bolaRaio = 6;
-
-        let jugadorX = 135;
-        let botX = 135;
-        let bolaX = 170;
-        let bolaY = 190;
-        let bolaVelX = 3;
-        let bolaVelY = 3;
-
-        let placarJogador = 0;
-        let placarBot = 0;
-        const pontosParaVencer = 3;
-        let executando = false;
-
-        // SEQUÊNCIA 1: Validação dos dados de entrada
-        function processarEtapaValidacao() {
+        function validarEIniciar() {
             const input = document.getElementById('nomeJogador');
             const msg = document.getElementById('msgValidacao');
             const texto = input.value.trim();
@@ -166,158 +156,112 @@
 
             if (texto === "") {
                 msg.innerText = "Por favor, digite seu nome!";
-                msg.style.visibility = "visible";
+                msg.style.display = "block";
                 return;
             }
 
             if (!apenasLetras.test(texto)) {
                 msg.innerText = "Somente letras são permitidas";
-                msg.style.visibility = "visible";
+                msg.style.display = "block";
                 return;
             }
 
-            msg.style.visibility = "hidden";
-            nomeJogadorSalvo = texto;
-
-            // Avança para a próxima etapa na sequência
-            processarEtapaConstrucaoTela();
+            msg.style.display = "none";
+            nomeSalvo = texto;
+            montarTabuleiro();
         }
 
-        // SEQUÊNCIA 2: Injeção da estrutura visual no navegador
-        function processarEtapaConstrucaoTela() {
-            const card = document.getElementById("mainCard");
-            card.innerHTML = `<canvas id="pongCanvas" width="340" height="380"></canvas>`;
+        function montarTabuleiro() {
+            const card = document.getElementById('mainCard');
+            card.innerHTML = `
+                <h2>Sua vez, ${nomeSalvo} (X)</h2>
+                <p>Alinhe três símbolos idênticos para vencer o Boss IGOR.</p>
+                <div class="tabuleiro">
+                    <div class="celula" onclick="jogada(0)" id="c0"></div>
+                    <div class="celula" onclick="jogada(1)" id="c1"></div>
+                    <div class="celula" onclick="jogada(2)" id="c2"></div>
+                    <div class="celula" onclick="jogada(3)" id="c3"></div>
+                    <div class="celula" onclick="jogada(4)" id="c4"></div>
+                    <div class="celula" onclick="jogada(5)" id="c5"></div>
+                    <div class="celula" onclick="jogada(6)" id="c6"></div>
+                    <div class="celula" onclick="jogada(7)" id="c7"></div>
+                    <div class="celula" onclick="jogada(8)" id="c8"></div>
+                </div>
+            `;
+        }
+
+        function jogada(index) {
+            if (tabuleiro[index] !== "" || !jogoAtivo) return;
+
+            tabuleiro[index] = "X";
+            document.getElementById(`c${index}`).innerText = "X";
+            document.getElementById(`c${index}`).classList.add('xis');
+
+            if (checarVitoria("X")) {
+                concluirJogo("vitoria");
+                return;
+            }
+
+            if (!tabuleiro.includes("")) {
+                concluirJogo("derrota");
+                return;
+            }
+
+            jogoAtivo = false;
+            setTimeout(jogadaBot, 400);
+        }
+
+        function jogadaBot() {
+            let vazios = [];
+            tabuleiro.forEach((v, i) => { if (v === "") vazios.push(i); });
             
-            // Pausa estratégica de 100ms para garantir que a tela foi totalmente montada pelo celular
-            setTimeout(processarEtapaInicializacaoMotores, 100);
-        }
-
-        // SEQUÊNCIA 3: Vinculação de variáveis e ativação do loop físico
-        function processarEtapaInicializacaoMotores() {
-            canvas = document.getElementById("pongCanvas");
-            if (!canvas) return; // Proteção contra falha estrutural
+            if (vazios.length === 0) return;
             
-            ctx = canvas.getContext("2d");
+            let escolha = vazios[Math.floor(Math.random() * vazios.length)];
+            tabuleiro[escolha] = "O";
+            document.getElementById(`c${escolha}`).innerText = "O";
+            document.getElementById(`c` + escolha).classList.add('bola');
 
-            configurarControles();
-            resetarBola();
-            executando = true;
-            loopJogo();
-        }
-
-        function configurarControles() {
-            canvas.addEventListener("touchmove", (e) => {
-                e.preventDefault();
-                const rect = canvas.getBoundingClientRect();
-                const touchX = e.touches.clientX - rect.left;
-                const escalaX = 340 / rect.width;
-                jugadorX = (touchX * escalaX) - raqueteLargura / 2;
-                
-                if (jugadorX < 0) jugadorX = 0;
-                if (jugadorX + raqueteLargura > 340) jugadorX = 340 - raqueteLargura;
-            }, { passive: false });
-
-            canvas.addEventListener("mousemove", (e) => {
-                const rect = canvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const escalaX = 340 / rect.width;
-                jugadorX = (mouseX * escalaX) - raqueteLargura / 2;
-
-                if (jugadorX < 0) jugadorX = 0;
-                if (jugadorX + raqueteLargura > 340) jugadorX = 340 - raqueteLargura;
-            });
-        }
-
-        function resetarBola() {
-            bolaX = 170;
-            bolaY = 190;
-            bolaVelX = (Math.random() > 0.5 ? 3 : -3);
-            bolaVelY = 3;
-        }
-
-        function atualizar() {
-            if (!executando) return;
-
-            bolaX += bolaVelX;
-            bolaY += bolaVelY;
-
-            if (bolaX - bolaRaio < 0 || bolaX + bolaRaio > 340) {
-                bolaVelX = -bolaVelX;
+            if (checarVitoria("O")) {
+                concluirJogo("derrota");
+                return;
             }
 
-            let centroBot = botX + raqueteLargura / 2;
-            if (centroBot < bolaX - 10) {
-                botX += 2.8;
-            } else if (centroBot > bolaX + 10) {
-                botX -= 2.8;
-            }
+            jogoAtivo = true;
+        }
 
-            if (botX < 0) botX = 0;
-            if (botX + raqueteLargura > 340) botX = 340 - raqueteLargura;
+        function checarVitoria(s) {
+            const p = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]];
+            return p.some(m => m.every(i => tabuleiro[i] === s));
+        }
 
-            if (bolaY - bolaRaio <= raqueteAltura) {
-                if (bolaX > botX && bolaX < botX + raqueteLargura) {
-                    bolaVelY = -bolaVelY;
-                    bolaY = raqueteAltura + bolaRaio;
-                    bolaVelX *= 1.05;
-                    bolaVelY *= 1.05;
-                } else if (bolaY < 0) {
-                    placarJogador++;
-                    checarFimDeJogo();
-                }
-            }
-
-            if (bolaY + bolaRaio >= 380 - raqueteAltura) {
-                if (bolaX > jugadorX && bolaX < jugadorX + raqueteLargura) {
-                    bolaVelY = -bolaVelY;
-                    bolaY = 380 - raqueteAltura - bolaRaio;
-                    bolaVelX *= 1.05;
-                    bolaVelY *= 1.05;
-                } else if (bolaY > 380) {
-                    placarBot++;
-                    checarFimDeJogo();
-                }
+        function concluirJogo(res) {
+            const card = document.getElementById('mainCard');
+            if (res === "vitoria") {
+                card.innerHTML = `
+                    <div class="texto-resultado sucesso">Jogou bem, but. 😏</div>
+                    <button class="btn-reiniciar" onclick="reiniciar()">Reiniciar</button>
+                `;
+            } else {
+                card.innerHTML = `
+                    <div class="texto-resultado vermelho">PERDEU BUT 💀</div>
+                    <button class="btn-reiniciar" onclick="reiniciar()">Reiniciar</button>
+                `;
             }
         }
 
-        function desenhar() {
-            if (!ctx) return;
-            ctx.clearRect(0, 0, 340, 380);
-
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(0, 190);
-            ctx.lineTo(340, 190);
-            ctx.stroke();
-
-            ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
-            ctx.font = "bold 40px sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText(placarBot, 170, 160);
-            ctx.fillText(placarJogador, 170, 250);
-
-            ctx.fillStyle = "#333333";
-            ctx.fillRect(botX, 0, raqueteLargura, raqueteAltura);
-
-            ctx.fillStyle = "#d4a373";
-            ctx.fillRect(jugadorX, 370, raqueteLargura, raqueteAltura);
-
-            ctx.fillStyle = "#ffffff";
-            ctx.beginPath();
-            ctx.arc(bolaX, bolaY, bolaRaio, 0, Math.PI * 2);
-            ctx.fill();
+        function reiniciar() {
+            tabuleiro = ["", "", "", "", "", "", "", "", ""];
+            jogoAtivo = true;
+            const card = document.getElementById('mainCard');
+            card.innerHTML = `
+                <h2>Ping Pong 🏓</h2>
+                <p>Insira seu nome para enfrentar o sistema de defesa.</p>
+                <input type="text" id="nomeJogador" class="input-nome" placeholder="Digite seu nome" maxlength="15">
+                <div id="msgValidacao" class="msg-validacao">Somente letras são permitidas</div>
+                <button class="btn-principal" onclick="validarEIniciar()">Iniciar Partida</button>
+            `;
         }
-
-        function loopJogo() {
-            atualizar();
-            desenhar();
-            if (executando) {
-                animacaoId = requestAnimationFrame(loopJogo);
-            }
-        }
-
-        function checarFimDeJogo() {
-            if (placarJogador >= pontosParaVencer || placarBot >= pontosParaVencer) {
-                executando = false;
-        
+    </script>
+</body>
+</html>
