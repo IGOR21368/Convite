@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mainframe Console</title>
+    <title>Terminal Core</title>
     <style>
         * {
             box-sizing: border-box;
@@ -16,289 +16,150 @@
         body {
             background-color: #000000;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            overflow: hidden;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            width: 100%;
-            max-width: 460px;
-            max-height: 95vh;
-        }
-
-        .window {
-            background-color: #000000;
-            border: 1px solid #00ff66;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 0 15px rgba(0, 255, 102, 0.1);
-            transition: opacity 1.5s ease, transform 1.5s ease, filter 1.5s ease;
-            height: 190px;
-        }
-
-        .window.dissolve {
-            opacity: 0;
-            filter: blur(10px) contrast(0);
-            transform: scale(0.9) translateY(20px);
-            pointer-events: none;
-        }
-
-        .window-header {
-            background-color: #000000;
-            border-bottom: 1px solid rgba(0, 255, 102, 0.3);
-            padding: 6px 10px;
-            font-size: 11px;
-            font-weight: bold;
-            color: #00ff66;
-            text-align: left;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .window-content {
-            padding: 8px;
-            flex-grow: 1;
+            width: 100vw;
             overflow: hidden;
             position: relative;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            justify-content: flex-end; /* Colado na borda lateral direita */
+            align-items: flex-start;
         }
 
-        .text-stream {
-            width: 100%;
-            height: 100%;
-            overflow-y: hidden;
-            font-size: 9px;
-            line-height: 1.3;
+        /* A SUA CAVEIRA DE ALTA FIDELIDADE OCULTA NO CENTRO (Opacidade 2%) */
+        .ghost-skull {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             color: #00ff66;
-            text-align: left;
+            font-size: 5px; /* Tamanho calibrado para caber na tela do celular sem quebrar linha */
+            line-height: 1.1;
+            white-space: pre;
+            opacity: 0.02; /* Praticamente invisível se não focar o olhar na tela escura */
+            z-index: 1;
+            pointer-events: none;
+            text-align: center;
         }
 
-        .footer-system {
-            grid-column: span 2;
+        /* Stream de dados vertical colado rigorosamente na borda direita */
+        .right-border-stream {
+            width: 150px;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            margin-top: 5px;
+            justify-content: flex-start;
+            align-items: flex-end;
+            padding-right: 5px;
+            padding-top: 5px;
+            z-index: 2;
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background-color: #000000;
-            border: 1px solid #00ff66;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            width: 0%;
-            height: 100%;
-            background-color: #00ff66;
-            box-shadow: 0 0 10px #00ff66;
-        }
-
-        .status-text {
+        .data-line {
+            font-size: 8px;
             color: #00ff66;
-            font-size: 10px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-
-        .victory-screen {
-            display: none;
-            position: fixed;
-            color: #00ff66;
-            font-size: 16px;
-            font-weight: bold;
-            text-align: center;
-            letter-spacing: 1px;
-            line-height: 1.6;
+            line-height: 1.2;
+            white-space: nowrap;
+            text-align: right;
+            opacity: 0.85;
         }
     </style>
 </head>
 <body>
 
-    <div class="dashboard" id="mainGrid">
-        <div class="window" id="w1">
-            <div class="window-header">Program Console</div>
-            <div class="window-content">
-                <div class="text-stream" id="consoleStream"></div>
-            </div>
-        </div>
+    <!-- SUA ARTE EXATA TOTALMENTE INJETADA NA ESTRUTURA -->
+    <div class="ghost-skull">__________________________________________________
+___________________¶¶¶¶¶¶¶¶¶¶¶¶¶__________________
+______________¶¶¶¶¶¶________¶¶¶¶¶¶¶_______________
+____________¶¶¶¶__________________¶¶¶¶____________
+__________¶¶¶________________________¶¶¶__________
+_________¶¶____________________________¶¶¶________
+_______¶¶¶_______________________________¶¶_______
+______¶¶__________________________________¶¶______
+_____¶¶_____________________________________¶_____
+____¶¶______________________________________¶¶____
+___¶¶_______________________________¶________¶¶___
+___¶¶_____________________________¶¶¶¶¶¶¶_____¶¶__
+___¶¶____________________________¶¶_____¶¶_____¶__
+___¶¶____________________________________¶¶____¶¶_
+___¶¶¶¶__________________________________¶_____¶¶_
+___¶¶¶¶¶¶________________________¶¶¶¶¶¶¶_¶¶_____¶_
+__¶¶_____¶_________________¶¶____¶¶____¶_¶______¶_
+_¶¶______________________________¶______________¶_
+_¶¶___¶¶¶¶¶_____________¶¶_____¶¶¶¶¶¶___________¶_
+__¶¶_¶__¶¶¶¶¶_____¶__¶¶¶____¶¶¶_____¶__¶¶_______¶_
+___¶¶___¶___¶¶¶____¶¶¶____¶¶¶_______¶_¶¶_______¶¶_
+_____¶¶¶¶¶____¶¶¶__¶¶¶¶_¶¶¶_________¶_¶¶_______¶__
+_______¶¶¶_______¶¶¶__¶¶____________¶_¶¶______¶¶__
+_______¶¶_¶______¶¶__¶_¶__________¶¶___¶_____¶¶___
+_______¶¶___¶¶¶¶¶_¶__¶_¶¶¶¶_____¶¶¶____¶¶¶¶¶¶¶¶___
+______¶¶__________¶¶¶¶¶___¶¶¶¶_¶¶____________¶¶___
+______¶________¶_¶¶__¶¶¶¶¶________________¶¶¶¶____
+______¶¶______¶¶¶______¶¶_¶¶____________¶¶¶¶______
+_______¶¶______¶__________¶___________¶¶¶_¶_______
+________¶¶¶_¶¶¶________________¶____¶¶¶___¶_______
+_________¶¶¶__¶¶_____________¶¶¶¶¶¶¶¶_____¶_______
+___________¶__¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶____¶¶______¶¶______
+___________¶__¶_¶¶_¶¶¶_¶¶¶_¶¶¶____¶_______¶_______
+___________¶¶_¶¶___¶_¶_¶_¶_¶__¶___¶______¶¶_______
+____________¶¶_¶_¶¶¶__¶_¶¶¶_¶_¶__¶_____¶¶¶________
+_____________¶__¶¶_¶__¶_¶_¶_¶¶¶¶¶_____¶¶__________
+______________¶__¶_¶¶_¶_¶¶¶¶¶__¶¶____¶¶___________
+______________¶¶____________________¶_____________
+_______________¶¶__________________¶______________
+_______________¶¶_________________¶_______________
+_______________¶¶________________¶________________
+________________¶_______________¶_________________
+________________¶¶¶____________¶__________________
+_________________¶¶¶¶¶¶¶¶¶__¶¶¶¶__________________
+__________________________¶¶______________________</div>
 
-        <div class="window" id="w2">
-            <div class="window-header">Neural Network</div>
-            <div class="window-content">
-                <canvas id="neuralCanvas"></canvas>
-            </div>
-        </div>
-
-        <div class="window" id="w3">
-            <div class="window-header">System Analytics</div>
-            <div class="window-content">
-                <canvas id="vectorCanvas"></canvas>
-            </div>
-        </div>
-
-        <div class="window" id="w4">
-            <div class="window-header">Android Subsystem</div>
-            <div class="window-content">
-                <div class="text-stream" id="androidStream"></div>
-            </div>
-        </div>
-
-        <div class="footer-system" id="footerBar">
-            <div class="progress-bar">
-                <div class="progress-fill" id="mainProgress"></div>
-            </div>
-            <div class="status-text" id="statusMessage">Executing global core deployment...</div>
-        </div>
-    </div>
-
-    <div class="victory-screen" id="victoryMsg">
-        [SUCCESS] MAINFRAME COLD LOCKDOWN COMPLETED.<br>
-        ALL ENVIRONMENT TRACES SUCCESSFULLY PURGED.
+    <div class="right-border-stream" id="streamContainer">
+        <div class="data-line">[SYSTEM_BOOT]</div>
     </div>
 
     <script>
-        const codePhrases = [
-            "get: function() { return d(f), e },",
-            "set: function(a) { d(f), e = a },",
-            "_.definePropertyBroken = 10, b[c] = e",
-            "a.migrateVersion = '1.4.1'; var f = {};",
-            "sys.allocate_virtual_blocks(0x7FFF);",
-            "kernel.bypass_boundary_firewall(true);",
-            "network.syn_flood_port_scan(active);",
-            "crypto.decrypt_rsa_key_distribution();",
-            "android.inject_payload_stack_trace();",
-            "hardware.profiling_active_threads(8);"
+        const container = document.getElementById("streamContainer");
+
+        const hackerLogs = [
+            "SYS_ALLOC_0x7FFF",
+            "ARM64_BYPASS_TRUE",
+            "KERNEL_HOOK_OK",
+            "SYN_FLOOD_ACTIVE",
+            "DECRYPT_RSA_1024",
+            "OVERWRITE_STACK",
+            "DALVIK_DEX_LOAD",
+            "SELINUX_DISABLED",
+            "TRACE_LOG_PURGED",
+            "THREADS_ACTIVE_8",
+            "VOLATILE_RAM_4GB",
+            "FIREWALL_BYPASS",
+            "ENV_MEM_PURGE",
+            "SESSION_STABLE",
+            "LOCKDOWN_EXEC",
+            "MEM_BLOCK_ALLOC",
+            "RUNTIME_HOOK_X9",
+            "NATIVE_PTR_SET",
+            "ZYGOTE_FORK_OK",
+            "SHELLCODE_INJECT"
         ];
 
-        const androidPhrases = [
-            "[INFO] Target environment identified: [ARM64_ANDROID_KERNEL]",
-            "[SYS] Resolving dalvik.system.DexClassLoader native pointer...",
-            "[OK] Successfully bypassed Android SELinux strict enforcement.",
-            "[ATTACK] Overwriting memory sectors in volatile system stack...",
-            "[SYS] Core thread allocation: 8 logical threads fully operational.",
-            "[OK] Security trace traces purged from global runtime logs.",
-            "[INFO] Memory allocation vector stable at ~4GB virtual layout.",
-            "[SUCCESS] Android sub-runtime hooked into secure loop handler."
-        ];
-
-        const consoleElem = document.getElementById("consoleStream");
-        const androidElem = document.getElementById("androidStream");
-
+        // Avalanche de dados desabando na borda direita (Velocidade Máxima)
         setInterval(() => {
-            const randCode = codePhrases[Math.floor(Math.random() * codePhrases.length)];
-            consoleElem.innerHTML += randCode + "<br>";
-            if (consoleElem.innerHTML.split("<br>").length > 13) {
-                consoleElem.innerHTML = consoleElem.innerHTML.split("<br>").slice(1).join("<br>");
-            }
-        }, 120);
-
-        setInterval(() => {
-            const randAndroid = androidPhrases[Math.floor(Math.random() * androidPhrases.length)];
-            androidElem.innerHTML += randAndroid + "<br>";
-            if (androidElem.innerHTML.split("<br>").length > 13) {
-                androidElem.innerHTML = androidElem.innerHTML.split("<br>").slice(1).join("<br>");
-            }
-        }, 180);
-
-        const nCanvas = document.getElementById("neuralCanvas");
-        const nCtx = nCanvas.getContext("2d");
-        nCanvas.width = 180;
-        nCanvas.height = 150;
-
-        let nodes = [];
-        for (let i = 0; i < 10; i++) {
-            nodes.push({
-                x: Math.random() * 180,
-                y: Math.random() * 150,
-                vx: (Math.random() - 0.5) * 1.5,
-                vy: (Math.random() - 0.5) * 1.5
-            });
-        }
-
-        function drawNeuralNetwork() {
-            if (!nCtx) return;
-            nCtx.clearRect(0, 0, 180, 150);
-            nCtx.fillStyle = "#00ff66";
-            nCtx.strokeStyle = "rgba(0, 255, 102, 0.15)";
-            nCtx.lineWidth = 1;
-
-            nodes.forEach(node => {
-                node.x += node.vx;
-                node.y += node.vy;
-
-                if (node.x < 0 || node.x > 180) node.vx = -node.vx;
-                if (node.y < 0 || node.y > 150) node.vy = -node.vy;
-
-                nCtx.beginPath();
-                nCtx.arc(node.x, node.y, 2, 0, Math.PI * 2);
-                nCtx.fill();
-            });
-
-            for (let i = 0; i < nodes.length; i++) {
-                for (let j = i + 1; j < nodes.length; j++) {
-                    let dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-                    if (dist < 50) {
-                        nCtx.beginPath();
-                        nCtx.moveTo(nodes[i].x, nodes[i].y);
-                        nCtx.lineTo(nodes[j].x, nodes[j].y);
-                        nCtx.stroke();
-                    }
-                }
-            }
-            requestAnimationFrame(drawNeuralNetwork);
-        }
-        drawNeuralNetwork();
-
-        const vCanvas = document.getElementById("vectorCanvas");
-        const vCtx = vCanvas.getContext("2d");
-        vCanvas.width = 180;
-        vCanvas.height = 150;
-
-        let offset = 0;
-        function drawStaticWave() {
-            if (!vCtx) return;
-            vCtx.clearRect(0, 0, 180, 150);
-            vCtx.strokeStyle = "#00ff66";
-            vCtx.lineWidth = 1.5;
-            vCtx.beginPath();
+            const log1 = hackerLogs[Math.floor(Math.random() * hackerLogs.length)];
+            const log2 = hackerLogs[Math.floor(Math.random() * hackerLogs.length)];
             
-            for (let x = 0; x < 180; x++) {
-                let y = 75 + Math.sin(x * 0.1 + offset) * 25 * Math.cos(x * 0.03) + Math.sin(x * 0.4) * 5;
-                if (x === 0) vCtx.moveTo(x, y);
-                else vCtx.lineTo(x, y);
+            const novaLinha = document.createElement("div");
+            novaLinha.className = "data-line";
+            novaLinha.innerText = `[${log1}]_0x${Math.floor(Math.random()*16777215).toString(16).toUpperCase()}:${log2}`;
+            
+            container.appendChild(novaLinha);
+
+            // Mantém a rolagem infinita e o site leve limpando o topo do buffer
+            if (container.children.length > 70) {
+                container.removeChild(container.firstChild);
             }
-            vCtx.stroke();
-            offset += 0.05; // Faz o gráfico senoidal se mover de forma analítica e realista
-            requestAnimationFrame(drawStaticWave);
-        }
-        drawStaticWave();
+        }, 12);
+    </script>
 
-        const progressFill = document.getElementById("mainProgress");
-        let percent = 0;
-
-        const progressInterval = setInterval(() => {
-            percent++;
-            progressFill.style.width = percent + "%";
-
-            if (percent >= 100) {
-                clearInterval(progressInterval);
-                executarSequenciaDelecaoDerretimento();
-            }
-        }, 90);
-
-        
+</body>
+</html>
