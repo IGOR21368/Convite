@@ -137,7 +137,7 @@
 
     <div class="card" id="mainCard">
         <h2>Ping Pong 🏓</h2>
-        <p>Insira seu nome para enfrentar o sistema de defesa.</p>
+        <p>Insira seu nome para jogar.</p>
         <input type="text" id="nomeJogador" class="input-nome" placeholder="Digite seu nome" maxlength="15">
         <div id="msgValidacao" class="msg-validacao">Somente letras são permitidas</div>
         <button class="btn-principal" onclick="validarEIniciar()">Iniciar Partida</button>
@@ -147,6 +147,9 @@
         let nomeSalvo = "";
         let tabuleiro = ["", "", "", "", "", "", "", "", ""];
         let jogoAtivo = true;
+
+        const padroesVitoria = [, [3, 4, 5], [6, 7, 8], // Horizontais, [1, 4, 7], [2, 5, 8], // Verticais, [2, 4, 6]             // Diagonais
+        ];
 
         function validarEIniciar() {
             const input = document.getElementById('nomeJogador');
@@ -175,7 +178,7 @@
             const card = document.getElementById('mainCard');
             card.innerHTML = `
                 <h2>Sua vez, ${nomeSalvo} (X)</h2>
-                <p>Alinhe três símbolos idênticos para vencer o Boss IGOR.</p>
+                <p>Alinhe três símbolos para vencer IGOR.</p>
                 <div class="tabuleiro">
                     <div class="celula" onclick="jogada(0)" id="c0"></div>
                     <div class="celula" onclick="jogada(1)" id="c1"></div>
@@ -203,65 +206,102 @@
             }
 
             if (!tabuleiro.includes("")) {
-                concluirJogo("derrota");
+                concluirJogo("empate");
                 return;
             }
 
             jogoAtivo = false;
-            setTimeout(jogadaBot, 400);
+            setTimeout(jogadaBotInteligente, 350);
         }
 
-        function jogadaBot() {
-            let vazios = [];
-            tabuleiro.forEach((v, i) => { if (v === "") vazios.push(i); });
+        function jogadaBotInteligente() {
+            let escolha = -1;
+
+            // 1. Tentar vencer imediatamente
+            escolha = buscarMelhorMovimento("O");
             
-            if (vazios.length === 0) return;
-            
-            let escolha = vazios[Math.floor(Math.random() * vazios.length)];
+            // 2. Se não der para vencer, bloquear o jogador (X)
+            if (escolha === -1) {
+                escolha = buscarMelhorMovimento("X");
+            }
+
+            // 3. Dominar o centro se estiver disponível
+            if (escolha === -1 && tabuleiro[4] === "") {
+                escolha = 4;
+            }
+
+            // 4. Jogar em um canto vazio estrategicamente
+            if (escolha === -1) {
+                const cantos =;
+                const cantosVazios = cantos.filter(i => tabuleiro[i] === "");
+                if (cantosVazios.length > 0) {
+                    escolha = cantosVazios[Math.floor(Math.random() * cantosVazios.length)];
+                }
+            }
+
+            // 5. Jogar em qualquer espaço que sobrou
+            if (escolha === -1) {
+                let vazios = [];
+                tabuleiro.forEach((v, i) => { if (v === "") vazios.push(i); });
+                escolha = vazios[Math.floor(Math.random() * vazios.length)];
+            }
+
             tabuleiro[escolha] = "O";
-            document.getElementById(`c${escolha}`).innerText = "O";
-            document.getElementById(`c` + escolha).classList.add('bola');
+            const elemento = document.getElementById(`c${escolha}`);
+            if (elemento) {
+                elemento.innerText = "O";
+                elemento.classList.add('bola');
+            }
 
             if (checarVitoria("O")) {
                 concluirJogo("derrota");
                 return;
             }
 
+            if (!tabuleiro.includes("")) {
+                concluirJogo("empate");
+                return;
+            }
+
             jogoAtivo = true;
         }
 
+        function buscarMelhorMovimento(simbolo) {
+            for (let padrao of padroesVitoria) {
+                const marcas = padrao.map(i => tabuleiro[i]);
+                const contagemSimbolo = marcas.filter(m => m === simbolo).length;
+                const contagemVazio = marcas.filter(m => m === "").length;
+
+                if (contagemSimbolo === 2 && contagemVazio === 1) {
+                    return padrao[marcas.indexOf("")];
+                }
+            }
+            return -1;
+        }
+
         function checarVitoria(s) {
-            const p = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]];
-            return p.some(m => m.every(i => tabuleiro[i] === s));
+            return padroesVitoria.some(m => m.every(i => tabuleiro[i] === s));
         }
 
         function concluirJogo(res) {
             const card = document.getElementById('mainCard');
             if (res === "vitoria") {
                 card.innerHTML = `
-                    <div class="texto-resultado sucesso">Jogou bem, but. 😏</div>
+                    <div class="texto-resultado sucesso">Jogou bem, but. </div>
+                    <button class="btn-reiniciar" onclick="reiniciar()">Reiniciar</button>
+                `;
+            } else if (res === "derrota") {
+                card.innerHTML = `
+                    <div class="texto-resultado vermelho">PERDEU BUT 💀</div>
                     <button class="btn-reiniciar" onclick="reiniciar()">Reiniciar</button>
                 `;
             } else {
                 card.innerHTML = `
-                    <div class="texto-resultado vermelho">PERDEU BUT 💀</div>
+                    <div class="texto-resultado sucesso">Empate tático. </div>
                     <button class="btn-reiniciar" onclick="reiniciar()">Reiniciar</button>
                 `;
             }
         }
 
         function reiniciar() {
-            tabuleiro = ["", "", "", "", "", "", "", "", ""];
-            jogoAtivo = true;
-            const card = document.getElementById('mainCard');
-            card.innerHTML = `
-                <h2>Ping Pong 🏓</h2>
-                <p>Insira seu nome para enfrentar o sistema de defesa.</p>
-                <input type="text" id="nomeJogador" class="input-nome" placeholder="Digite seu nome" maxlength="15">
-                <div id="msgValidacao" class="msg-validacao">Somente letras são permitidas</div>
-                <button class="btn-principal" onclick="validarEIniciar()">Iniciar Partida</button>
-            `;
-        }
-    </script>
-</body>
-</html>
+        
