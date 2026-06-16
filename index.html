@@ -2,203 +2,284 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mainframe Console</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Courier New', Courier, monospace;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
+            background-color: #000000;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background-color: #000000; /* Fundo Preto Puro */
-            padding: 20px;
+            padding: 10px;
+            overflow: hidden;
         }
 
-        .card {
-            background: #000000; /* Card Preto para mesclar com o fundo */
-            padding: 30px 20px;
-            border-radius: 16px;
-            box-shadow: 0 0 20px rgba(0, 255, 102, 0.15); /* Sombra Verde Suave */
-            max-width: 440px;
+        /* Grade Principal que organiza as abas idênticas à imagem */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
             width: 100%;
-            min-height: 480px;
+            max-width: 460px; /* Otimizado para telas de smartphones */
+            max-height: 95vh;
+        }
+
+        /* Estrutura de cada Aba Visual */
+        .window {
+            background-color: #000000;
+            border: 1px solid #00ff66;
+            border-radius: 6px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            align-items: flex-start;
-            text-align: left;
-            border: 1px solid #00ff66; /* Borda Verde Neon Estilo Monitor Antigo */
-        }
-
-        .terminal-header {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 25px;
-            width: 100%;
-            border-bottom: 1px solid rgba(0, 255, 102, 0.2);
-            padding-bottom: 12px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #00ff66; /* Todos os detalhes em verde */
-            opacity: 0.4;
-        }
-
-        .console {
-            font-size: 12px;
-            line-height: 1.6;
-            width: 100%;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        .linha {
-            margin-bottom: 6px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            color: #00ff66; /* Texto estritamente Verde Neon */
-        }
-
-        .barra-progresso {
-            width: 100%;
-            background-color: #000000;
-            height: 8px;
-            border-radius: 4px;
-            margin-top: 20px;
             overflow: hidden;
-            display: none;
-            border: 1px solid #00ff66;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.1);
+            transition: opacity 1.5s ease, transform 1.5s ease, filter 1.5s ease;
+            height: 190px;
         }
 
-        .progresso {
+        /* Classe injetada pelo JavaScript para fazer a aba "derreter/deletar" */
+        .window.dissolve {
+            opacity: 0;
+            filter: blur(10px) contrast(0);
+            transform: scale(0.9) translateY(20px);
+            pointer-events: none;
+        }
+
+        .window-header {
+            background-color: #000000;
+            border-bottom: 1px solid rgba(0, 255, 102, 0.3);
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #00ff66;
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .window-content {
+            padding: 8px;
+            flex-grow: 1;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Estilo da Aba de Texto Fluido em Alta Velocidade */
+        .text-stream {
+            width: 100%;
+            height: 100%;
+            overflow-y: hidden;
+            font-size: 9px;
+            line-height: 1.3;
+            color: #00ff66;
+            text-align: left;
+        }
+
+        /* Barra de Progresso no Rodapé */
+        .footer-system {
+            grid-column: span 2;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #000000;
+            border: 1px solid #00ff66;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
             width: 0%;
             height: 100%;
             background-color: #00ff66;
-            transition: width 0.1s linear;
+            box-shadow: 0 0 10px #00ff66;
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            font-size: 12px;
-            font-weight: bold;
-            font-family: 'Courier New', Courier, monospace;
-            border: 1px solid #00ff66;
-            border-radius: 6px;
-            cursor: pointer;
-            background-color: transparent;
+        .status-text {
             color: #00ff66;
-            margin-top: 20px;
-            display: none;
-            letter-spacing: 2px;
-            transition: all 0.2s ease;
+            font-size: 10px;
+            text-align: center;
+            text-transform: uppercase;
         }
 
-        button:active {
-            background-color: #00ff66;
-            color: #000000;
+        .victory-screen {
+            display: none;
+            position: fixed;
+            color: #00ff66;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 1px;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="terminal-header">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
-        
-        <div class="console" id="logConsole">
-            <div class="linha">[SYSTEM] Initializing root terminal connection procedure...</div>
+    <div class="dashboard" id="mainGrid">
+        <!-- ABA 1: CONSOLE DE CÓDIGO PARALELO (FLUIDO) -->
+        <div class="window" id="w1">
+            <div class="window-header">Program Console</div>
+            <div class="window-content">
+                <div class="text-stream" id="consoleStream"></div>
+            </div>
         </div>
 
-        <div class="barra-progresso" id="barraContainer">
-            <div class="progresso" id="barraFill"></div>
+        <!-- ABA 2: RENDERIZAÇÃO NEURAL DINÂMICA (CANVAS) -->
+        <div class="window" id="w2">
+            <div class="window-header">Neural Network</div>
+            <div class="window-content">
+                <canvas id="neuralCanvas" style="width:100%; height:100%;"></canvas>
+            </div>
         </div>
 
-        <button id="btnSair" onclick="document.body.innerHTML='<h1 style=\'font-family:monospace;text-align:center;margin-top:45vh;color:#00ff66;\'>CONNECTION TERMINATED.</h1>';">DISCONNECT TERMINAL</button>
+        <!-- ABA 3: GRÁFICO ESTÁTICO DE ALTA FIDELIDADE (SENÓIDE) -->
+        <div class="window" id="w3">
+            <div class="window-header">System Analytics</div>
+            <div class="window-content">
+                <canvas id="vectorCanvas" style="width:100%; height:100%;"></canvas>
+            </div>
+        </div>
+
+        <!-- ABA 4: OPERAÇÕES DO ANDROID KERNEL -->
+        <div class="window" id="w4">
+            <div class="window-header">Android Subsystem</div>
+            <div class="window-content">
+                <div class="text-stream" id="androidStream"></div>
+            </div>
+        </div>
+
+        <!-- BARRA DE CARREGAMENTO DO SISTEMA PRINCIPAL -->
+        <div class="footer-system" id="footerBar">
+            <div class="progress-bar">
+                <div class="progress-fill" id="mainProgress"></div>
+            </div>
+            <div class="status-text" id="statusMessage">Executing global core deployment...</div>
+        </div>
+    </div>
+
+    <div class="victory-screen" id="victoryMsg">
+        [SUCCESS] MAINFRAME COLD LOCKDOWN COMPLETED.<br>
+        ALL ENVIRONMENT TRACES SUCCESSFULLY PURGED.
     </div>
 
     <script>
-        const consoleElem = document.getElementById("logConsole");
-        const barraContainer = document.getElementById("barraContainer");
-        const barraFill = document.getElementById("barraFill");
-        const btnSair = document.getElementById("btnSair");
-
-        const nCores = navigator.hardwareConcurrency || "8";
-        const ramEst = navigator.deviceMemory || "4";
-        
-        const userAgent = navigator.userAgent;
-        let osKernel = "X86_64_UNKNOWN_LINUX";
-        if (userAgent.match(/Android/i)) osKernel = "ARM64_ANDROID_OS_KERNEL";
-        else if (userAgent.match(/iPhone|iPad|iPod/i)) osKernel = "DARWIN_IOS_MACH_CORE";
-        else if (userAgent.match(/Windows/i)) osKernel = "WIN_NT_CORE_X64";
-
-        // Frases longas, profissionais e estritamente técnicas em inglês
-        const scriptsLogs = [
-            { txt: "[SUCCESS] Securing connection through encrypted proxy cascade network...", tempo: 600 },
-            { txt: "[SUCCESS] Cryptographic TLS 1.3 handshake sequence successfully verified.", tempo: 1200 },
-            { txt: `[INFO] Remote host platform kernel identified as: [${osKernel}]`, tempo: 1800 },
-            { txt: `[INFO] Hardware profiling: ${nCores} logical processing threads detected.`, tempo: 2400 },
-            { txt: `[INFO] Memory allocation mapping: ~${ramEst}GB total volatile RAM available.`, tempo: 3000 },
-            { txt: "[ATTACK] Initiating multi-threaded TCP/IP stealth port scanning vector...", tempo: 3600 },
-            { txt: "[ATTACK] Injecting compiled binary shellcode payload into system stack...", tempo: 4200 },
-            { txt: "[SUCCESS] RSA-1024 asynchronous cryptographic key distribution verified.", tempo: 4800 },
-            { txt: "[INFO] Executing high-level subsystem bypass on boundary firewall...", tempo: 5400 },
-            { txt: "[ATTACK] Allocating virtual environment blocks for memory dump operations...", tempo: 6000 },
-            { txt: "[INFO] Compiling environment logs and clearing transient trace footprints...", tempo: 6600 },
-            { txt: "[SUCCESS] Remote session stabilized. Initializing kernel extraction...", tempo: 7200 }
+        // DADOS TÉCNICOS PARA AS ABAS DE FLUXO DE TEXTO
+        const codePhrases = [
+            "get: function() { return d(f), e },",
+            "set: function(a) { d(f), e = a },",
+            "_.definePropertyBroken = 10, b[c] = e",
+            "a.migrateVersion = '1.4.1'; var f = {};",
+            "sys.allocate_virtual_blocks(0x7FFF);",
+            "kernel.bypass_boundary_firewall(true);",
+            "network.syn_flood_port_scan(active);",
+            "crypto.decrypt_rsa_key_distribution();",
+            "android.inject_payload_stack_trace();",
+            "hardware.profiling_active_threads(8);"
         ];
 
-        scriptsLogs.forEach((log) => {
-            setTimeout(() => {
-                const novaLinha = document.createElement("div");
-                novaLinha.className = "linha";
-                novaLinha.innerText = log.txt;
-                consoleElem.appendChild(novaLinha);
-                // Rola o console automaticamente para baixo para acompanhar os novos textos
-                consoleElem.scrollTop = consoleElem.scrollHeight;
-            }, log.tempo);
-        });
+        const androidPhrases = [
+            "[INFO] Target environment identified: [ARM64_ANDROID_KERNEL]",
+            "[SYS] Resolving dalvik.system.DexClassLoader native pointer...",
+            "[OK] Successfully bypassed Android SELinux strict enforcement.",
+            "[ATTACK] Overwriting memory sectors in volatile system stack...",
+            "[SYS] Core thread allocation: 8 logical threads fully operational.",
+            "[OK] Security trace traces purged from global runtime logs.",
+            "[INFO] Memory allocation vector stable at ~4GB virtual layout.",
+            "[SUCCESS] Android sub-runtime hooked into secure loop handler."
+        ];
 
-        setTimeout(() => {
-            barraContainer.style.display = "block";
-            let porcentagem = 0;
-            
-            const intervaloProgresso = setInterval(() => {
-                porcentagem++;
-                barraFill.style.width = porcentagem + "%";
-                
-                if (porcentagem >= 100) {
-                    clearInterval(intervaloProgresso);
-                    exibirConclusao();
-                }
-            }, 25);
-        }, 7600);
+        // CONFIGURAÇÃO DA ABA 1 E ABA 4 (FLUXO DE TEXTO SIMULTÂNEO)
+        const consoleElem = document.getElementById("consoleStream");
+        const androidElem = document.getElementById("androidStream");
 
-        function exibirConclusao() {
-            const finalLinha = document.createElement("div");
-            finalLinha.className = "linha";
-            finalLinha.style.marginTop = "15px";
-            finalLinha.style.fontWeight = "bold";
-            finalLinha.innerText = "\n[SUCCESS] DEPLOYMENT SEQUENCE COMPLETELY EXECUTED.\nTERMINAL STATUS: COLD LOCKDOWN COMPLETED.";
-            consoleElem.appendChild(finalLinha);
-            consoleElem.scrollTop = consoleElem.scrollHeight;
-            
-            btnSair.style.display = "block";
+        setInterval(() => {
+            const randCode = codePhrases[Math.floor(Math.random() * codePhrases.length)];
+            consoleElem.innerHTML += randCode + "<br>";
+            if (consoleElem.innerHTML.split("<br>").length > 13) {
+                consoleElem.innerHTML = consoleElem.innerHTML.split("<br>").slice(1).join("<br>");
+            }
+        }, 150); // Velocidade do console de código
+
+        setInterval(() => {
+            const randAndroid = androidPhrases[Math.floor(Math.random() * androidPhrases.length)];
+            androidElem.innerHTML += randAndroid + "<br>";
+            if (androidElem.innerHTML.split("<br>").length > 13) {
+                androidElem.innerHTML = androidElem.innerHTML.split("<br>").slice(1).join("<br>");
+            }
+        }, 220); // Velocidade do console Android
+
+        // CONFIGURAÇÃO DA ABA 2 (REDE NEURAL EM TEMPO REAL VIA CANVAS)
+        const nCanvas = document.getElementById("neuralCanvas");
+        const nCtx = nCanvas.getContext("2d");
+        nCanvas.width = 180;
+        nCanvas.height = 150;
+
+        let nodes = [];
+        for (let i = 0; i < 12; i++) {
+            nodes.push({
+                x: Math.random() * nCanvas.width,
+                y: Math.random() * nCanvas.height,
+                vx: (Math.random() - 0.5) * 1.2,
+                vy: (Math.random() - 0.5) * 1.2
+            });
         }
-    </script>
 
-</body>
-</html>
+        function drawNeuralNetwork() {
+            nCtx.clearRect(0, 0, nCanvas.width, nCanvas.height);
+            nCtx.fillStyle = "#00ff66";
+            nCtx.strokeStyle = "rgba(0, 255, 102, 0.15)";
+            nCtx.lineWidth = 1;
+
+            nodes.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
+
+                if (node.x < 0 || node.x > nCanvas.width) node.vx = -node.vx;
+                if (node.y < 0 || node.y > nCanvas.height) node.vy = -node.vy;
+
+                nCtx.beginPath();
+                nCtx.arc(node.x, node.y, 2, 0, Math.PI * 2);
+                nCtx.fill();
+            });
+
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    let dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+                    if (dist < 45) {
+                        nCtx.beginPath();
+                        nCtx.moveTo(nodes[i].x, nodes[i].y);
+                        nCtx.lineTo(nodes[j].x, nodes[j].y);
+                        nCtx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(drawNeuralNetwork);
+        }
+        drawNeuralNetwork();
+
+        // CONFIGURAÇÃO DA ABA 3 (GRÁFICO SENOIDAL ESTÁTICO DE ALTA FIDELIDADE)
+        const vCanvas = document.getElementById("vectorCanvas");
+        const vCtx = vCanvas.getContext("2d");
+        vCanvas.width = 180;
+        vCanvas.height = 150;
+
+                
