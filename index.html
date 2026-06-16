@@ -2,306 +2,292 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonic Retro Runner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Retro Mobile Racer</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Arial Black', Gadget, sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body {
-            background-color: #111;
+            background-color: #222;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
-            user-select: none;
-            touch-action: manipulation;
+            touch-action: none;
         }
 
-        /* Janela do Jogo */
+        /* Container Principal do Jogo */
         #game-container {
             width: 100%;
-            max-width: 800px;
-            height: 400px;
-            background: linear-gradient(to bottom, #2259ec 0%, #4da3ff 60%, #aed5ff 100%);
+            max-width: 450px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #115511; /* Grama externa */
             position: relative;
             overflow: hidden;
-            border: 4px solid #fff;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 4px solid #444;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
         }
 
-        /* Nuvens do Cenário */
-        .sky-scenery {
-            position: absolute;
-            top: 40px;
-            width: 200%;
-            height: 60px;
-            background: radial-gradient(circle at 20% 50%, #ffffff 20px, transparent 21%),
-                        radial-gradient(circle at 25% 60%, #ffffff 30px, transparent 31%),
-                        radial-gradient(circle at 70% 50%, #ffffff 20px, transparent 21%),
-                        radial-gradient(circle at 75% 60%, #ffffff 30px, transparent 31%);
-            background-size: 400px 60px;
-            animation: scrollBackdrop 25s linear infinite;
-            animation-play-state: paused;
-            opacity: 0.5;
-        }
-
-        /* Montanhas ao Fundo */
-        .mountains {
-            position: absolute;
-            bottom: 80px;
-            width: 200%;
-            height: 80px;
-            background: repeating-linear-gradient(90deg, transparent, transparent 50px, #2d7d32 50px, #2d7d32 150px, transparent 150px, transparent 200px);
-            clip-path: polygon(0% 100%, 10% 30%, 25% 100%, 35% 20%, 50% 100%, 60% 30%, 75% 100%, 85% 20%, 100% 100%);
-            animation: scrollBackdrop 15s linear infinite;
-            animation-play-state: paused;
-            opacity: 0.7;
-        }
-
-        /* Chão Quadriculado da Green Hill Zone */
-        #floor {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 200%;
-            height: 80px;
-            background-color: #d86800;
-            background-image: 
-                linear-gradient(45deg, #983800 25%, transparent 25%, transparent 75%, #983800 75%),
-                linear-gradient(45deg, #983800 25%, transparent 25%, transparent 75%, #983800 75%);
-            background-size: 40px 40px;
-            background-position: 0 0, 20px 20px;
-            border-top: 10px solid #00d000;
-            box-shadow: inset 0 6px 0 #007800;
-            animation: scrollFloor 1.5s linear infinite;
-            animation-play-state: paused;
-        }
-
-        /* Interface do Placar (HUD) */
+        /* Placar Superior */
         #hud {
             position: absolute;
             top: 15px;
-            left: 15px;
-            color: #ffe600;
-            font-size: 20px;
-            font-weight: bold;
-            text-shadow: 2px 2px #000;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-size: 16px;
+            text-align: center;
             z-index: 10;
-            line-height: 1.5;
+            border: 2px solid #ffcc00;
+            width: 80%;
         }
-        .hud-val { color: #fff; }
+        .hud-val { color: #ffcc00; }
 
-        /* Sonic em CSS */
-        #sonic {
-            width: 50px;
-            height: 60px;
-            position: absolute;
-            bottom: 80px;
-            left: 80px;
-            background-color: #0033cc;
-            border-radius: 12px 30px 15px 12px;
-            box-shadow: 
-                inset -6px -4px 0 #001aa3,
-                -8px 4px 0 #0033cc, 
-                -12px 14px 0 #0033cc,
-                -4px 44px 0 #e60000, 
-                4px 44px 0 #e60000;
-            z-index: 5;
-        }
-        #sonic::before {
-            content: '';
-            position: absolute;
-            top: 8px; right: -2px;
-            width: 22px; height: 22px;
-            background: #ffcc99;
-            border-radius: 50% 50% 0 50%;
-        }
-        #sonic::after {
-            content: '';
-            position: absolute;
-            top: 12px; right: 4px;
-            width: 6px; height: 12px;
-            background: #000;
-            border-radius: 40%;
-            box-shadow: -4px -2px 0 #fff;
+        /* Canvas da Estrada e Muros */
+        #road-canvas {
+            display: block;
+            width: 100%;
+            height: 60%; /* Ocupa a parte superior */
+            background-color: #333;
         }
 
-        /* Estado de Bola Giratória do Sonic */
-        #sonic.spinning {
-            width: 46px;
-            height: 46px;
+        /* PAINEL DE CONTROLES VIRTUAIS (Inferior) */
+        #control-panel {
+            width: 100%;
+            height: 40%; /* Ocupa a parte de baixo */
+            background: linear-gradient(to bottom, #2c3e50, #1a252f);
+            border-top: 6px solid #ffcc00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* Botão do Pedal (Acelerar) - Esquerda */
+        #pedal-btn {
+            width: 90px;
+            height: 130px;
+            background: linear-gradient(to bottom, #555, #222);
+            border: 4px solid #888;
+            border-radius: 15px 15px 5px 5px;
+            box-shadow: 0 8px 0 #111, 0 10px 15px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffcc00;
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 1px 1px #000;
+        }
+        #pedal-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #111;
+            background: linear-gradient(to bottom, #333, #111);
+        }
+
+        /* Botões de Seta (Direção) - Direita */
+        .arrow-btn {
+            width: 85px;
+            height: 85px;
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+            border: 3px solid #fff;
             border-radius: 50%;
-            background: repeating-conic-gradient(#0033cc 0% 25%, #001aa3 25% 50%, #4da3ff 50% 75%, #0033cc 75% 100%);
-            box-shadow: 0 0 12px #0033cc;
-            animation: spinBall 0.15s linear infinite;
+            box-shadow: 0 6px 0 #7f2d21, 0 8px 10px rgba(0,0,0,0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 32px;
         }
-        #sonic.spinning::before, #sonic.spinning::after { display: none; }
-
-        /* Inimigo Motobug */
-        #enemy {
-            width: 48px;
-            height: 40px;
-            position: absolute;
-            bottom: 80px;
-            right: -60px;
-            background-color: #e60000;
-            border-radius: 24px 24px 8px 8px;
-            box-shadow: inset -6px -4px 0 #990000,
-                        -6px 26px 0 #333, 
-                        6px 26px 0 #333;
-            z-index: 5;
-        }
-        #enemy::before {
-            content: '';
-            position: absolute;
-            top: 12px; left: -6px;
-            width: 14px; height: 8px;
-            background: #ffcc00;
-            border-radius: 4px;
+        .arrow-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #7f2d21;
+            background: linear-gradient(to bottom, #c0392b, #962d22);
         }
 
-        /* Argola Dourada */
-        #ring-item {
-            width: 24px;
-            height: 24px;
-            position: absolute;
-            bottom: 170px;
-            right: -100px;
-            border: 5px solid #ffcc00;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #ffea00, inset 0 0 6px #ffea00;
-            z-index: 4;
-            animation: ringFloat 0.5s ease-in-out infinite alternate;
-        }
-
-        /* Tela de Interface */
+        /* Telas de Menu Overlay */
         #screen-overlay {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.75);
+            top: 0; left: 0; width: 100%; height: 60%;
+            background: rgba(0,0,0,0.85);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             color: #fff;
             z-index: 20;
+            text-align: center;
+            padding: 20px;
         }
         #screen-overlay h1 {
-            color: #ff3300;
-            font-size: 42px;
+            color: #ffcc00;
+            font-size: 32px;
             margin-bottom: 20px;
-            text-shadow: 3px 3px #000;
-            letter-spacing: 2px;
+            text-shadow: 2px 2px #000;
         }
-        #screen-overlay button {
+        #start-btn {
             font-size: 18px;
-            background: #ffcc00;
-            color: #000;
-            padding: 12px 25px;
+            background: #2ecc71;
+            color: #fff;
+            padding: 12px 40px;
             border: none;
-            border-radius: 6px;
+            border-radius: 30px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 4px 0 #b38f00;
+            box-shadow: 0 5px 0 #27ae60;
+            text-transform: uppercase;
         }
-
-        /* Animações */
-        @keyframes scrollBackdrop {
-            from { background-position-x: 0; }
-            to { background-position-x: -400px; }
-        }
-
-        @keyframes scrollFloor {
-            from { background-position-x: 0; }
-            to { background-position-x: -40px; }
-        }
-
-        @keyframes spinBall {
-            100% { transform: rotate(-360deg); }
-        }
-
-        @keyframes ringFloat {
-            from { transform: translateY(0); }
-            to { transform: translateY(-6px); }
-        }
-
-        .jumping {
-            animation: jumpArc 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        @keyframes jumpArc {
-            0% { bottom: 80px; }
-            50% { bottom: 230px; }
-            100% { bottom: 80px; }
+        #start-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #27ae60;
         }
     </style>
 </head>
 <body>
 
     <div id="game-container">
+        <!-- HUD Superior -->
         <div id="hud">
-            SCORE <span id="score-val" class="hud-val">0</span><br>
-            RINGS <span id="rings-val" class="hud-val">0</span>
+            DISTÂNCIA: <span id="distance-val" class="hud-val">0m</span> | 
+            VEL: <span id="speed-val" class="hud-val">0 km/h</span>
         </div>
 
-        <div class="sky-scenery"></div>
-        <div class="mountains"></div>
-        <div id="floor"></div>
+        <!-- Tela de Renderização Gráfica -->
+        <canvas id="road-canvas"></canvas>
 
-        <div id="sonic"></div>
-        <div id="enemy"></div>
-        <div id="ring-item"></div>
-
+        <!-- Menu Inicial Físico -->
         <div id="screen-overlay">
-            <h1 id="title-msg">SONIC RUNNER</h1>
-            <button id="action-btn" onclick="startGame()">CLIQUE PARA JOGAR</button>
+            <h1 id="menu-title">RETRO RACER</h1>
+            <button id="start-btn" onclick="startGame()">TOQUE PARA INICIAR</button>
+        </div>
+
+        <!-- Painel de Controles Físicos do Mobile -->
+        <div id="control-panel">
+            <!-- Esquerda: Pedal de Aceleração -->
+            <div class="control-group">
+                <div id="pedal-btn">PEDAL</div>
+            </div>
+            
+            <!-- Direita: Setas de Curva -->
+            <div class="control-group">
+                <div id="left-btn" class="arrow-btn">◀</div>
+                <div id="right-btn" class="arrow-btn">▶</div>
+            </div>
         </div>
     </div>
 
     <script>
-        const container = document.getElementById('game-container');
-        const sky = document.querySelector('.sky-scenery');
-        const mountains = document.querySelector('.mountains');
-        const sonic = document.getElementById('sonic');
-        const enemy = document.getElementById('enemy');
-        const ringItem = document.getElementById('ring-item');
-        const floor = document.getElementById('floor');
-        const overlay = document.getElementById('screen-overlay');
-        const titleMsg = document.getElementById('title-msg');
-        const actionBtn = document.getElementById('action-btn');
-        const scoreVal = document.getElementById('score-val');
-        const ringsVal = document.getElementById('rings-val');
-
-        let isJumping = false;
-        let isPlaying = false;
-        let score = 0;
-        let rings = 0;
-        let gameSpeed = 6;
-        let gameLoopInterval;
+        const canvas = document.getElementById('road-canvas');
+        const ctx = canvas.getContext('2d');
         
-        let enemyX = 850;
-        let ringX = 1100;
+        const overlay = document.getElementById('screen-overlay');
+        const menuTitle = document.getElementById('menu-title');
+        const startBtn = document.getElementById('start-btn');
+        const distanceVal = document.getElementById('distance-val');
+        const speedVal = document.getElementById('speed-val');
 
-        // Comandos Universais de Pulo
-        document.addEventListener('keydown', (e) => { if (e.code === 'Space' || e.code === 'ArrowUp') triggerJump(); });
-        container.addEventListener('touchstart', (e) => { 
-            if(isPlaying) {
-                e.preventDefault(); 
-                triggerJump(); 
-            }
-        }, { passive: false });
-        container.addEventListener('mousedown', () => { if(isPlaying) triggerJump(); });
+        // Referência dos Botões
+        const pedalBtn = document.getElementById('pedal-btn');
+        const leftBtn = document.getElementById('left-btn');
+        const rightBtn = document.getElementById('right-btn');
 
-        function triggerJump() {
-            if (!isPlaying || isJumping) return;
-            isJumping = true;
-            sonic.classList.add('spinning', 'jumping');
+        // Ajuste de Resolução Interna do Canvas
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Estados e Variáveis do Jogo
+        let isPlaying = false;
+        let gameLoopInterval;
+        let distance = 0;
+        let speed = 0;
+        let maxSpeed = 120;
+        
+        // Controles ativos
+        let keys = { accelerating: false, left: false, right: false };
+
+        // Parâmetros da Pista e do Carro
+        let playerX = 0; // Posição lateral do carro (-1 esquerda total, 1 direita total)
+        let trackPosition = 0; // Progresso na pista
+        let currentCurve = 0; // Curvatura atual da estrada
+        
+        // Elementos de Cenário Embutidos
+        let obstacles = [];
+        let trackSegments = [];
+
+        // Inicializa mapa de curvas e retas randômicas
+        for(let i=0; i<500; i++) {
+            let curve = 0;
+            if (i > 30 && i < 100) curve = 0.5;   // Curva à direita
+            if (i > 150 && i < 220) curve = -0.6; // Curva à esquerda
+            if (i > 300 && i < 380) curve = 0.8;  // Curva acentuada direita
+            trackSegments.push(curve);
+        }
+
+        // Eventos Touch nos Controles Virtuais (Essencial para não falhar no celular)
+        pedalBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys.accelerating = true; });
+        pedalBtn.addEventListener('touchend', () => keys.accelerating = false);
+        
+        leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys.left = true; });
+        leftBtn.addEventListener('touchend', () => keys.left = false);
+        
+        rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys.right = true; });
+        rightBtn.addEventListener('touchend', () => keys.right = false);
+
+        // Suporte para testes rápidos no computador (Teclado)
+        document.addEventListener('keydown', (e) => {
+            if(e.code === 'ArrowUp' || e.code === 'KeyW') keys.accelerating = true;
+            if(e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
+            if(e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
+        });
+        document.addEventListener('keyup', (e) => {
+            if(e.code === 'ArrowUp' || e.code === 'KeyW') keys.accelerating = false;
+            if(e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+            if(e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
+        });
+
+        function startGame() {
+            isPlaying = true;
+            distance = 0;
+            speed = 0;
+            playerX = 0;
+            trackPosition = 0;
+            obstacles = [
+                { pos: 50, x: -0.3 },
+                { pos: 120, x: 0.4 },
+                { pos: 200, x: -0.5 },
+                { pos: 280, x: 0.2 },
+                { pos: 360, x: -0.2 },
+                { pos: 440, x: 0.5 }
+            ];
+
+            overlay.style.display = 'none';
+            resizeCanvas();
+            
+            clearInterval(gameLoopInterval);
+            gameLoopInterval = setInterval(updateAndRender, 1000 / 60); // 60 FPS estável
+        }
 
         
