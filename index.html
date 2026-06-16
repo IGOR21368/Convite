@@ -2,15 +2,14 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Desafio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Courier New', Courier, monospace;
         }
 
         body {
@@ -23,278 +22,177 @@
         }
 
         .card {
-            background: #ffffff;
-            padding: 40px 30px;
+            background: #0d0e12;
+            padding: 30px 20px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0, 0, 0, 0.02);
-            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             max-width: 400px;
             width: 100%;
-            min-height: 320px;
+            min-height: 380px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            justify-content: flex-start;
+            align-items: flex-start;
+            text-align: left;
+            border: 1px solid #1f242e;
+            position: relative;
         }
 
-        h2 {
-            font-size: 24px;
-            color: #1a1a1a;
-            margin-bottom: 12px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        p {
-            font-size: 15px;
-            color: #777777;
-            margin-bottom: 25px;
-            line-height: 1.4;
-        }
-
-        .input-nome {
+        .terminal-header {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
             width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            outline: none;
-            margin-bottom: 5px;
-            text-align: center;
+            border-bottom: 1px solid #1f242e;
+            padding-bottom: 10px;
         }
 
-        .input-nome:focus {
-            border-color: #d4a373;
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
         }
+        .dot.r { background-color: #ff5f56; }
+        .dot.y { background-color: #ffbd2e; }
+        .dot.g { background-color: #27c93f; }
 
-        .msg-validacao {
-            color: #dc3545;
+        .console {
+            color: #00ff66;
             font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            height: 18px;
+            line-height: 1.6;
+            width: 100%;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .linha {
+            margin-bottom: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .barra-progresso {
+            width: 100%;
+            background-color: #1a1d24;
+            height: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            overflow: hidden;
             display: none;
+        }
+
+        .progresso {
+            width: 0%;
+            height: 100%;
+            background-color: #00ff66;
+            transition: width 0.1s linear;
         }
 
         button {
             width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .btn-principal {
-            background-color: #d4a373;
-            color: white;
-        }
-
-        .btn-reiniciar {
-            background-color: #1a1a1a;
-            color: white;
-            margin-top: 20px;
-            max-width: 200px;
-        }
-
-        .tabuleiro {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-            width: 240px;
-            height: 240px;
-        }
-
-        .celula {
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 32px;
+            padding: 12px;
+            font-size: 14px;
             font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            border: 1px solid #00ff66;
+            border-radius: 8px;
             cursor: pointer;
+            background-color: transparent;
+            color: #00ff66;
+            margin-top: 15px;
+            display: none;
+            transition: all 0.2s ease;
         }
 
-        .celula.xis { color: #d4a373; }
-        .celula.bola { color: #6c757d; }
-
-        .texto-resultado {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+        button:active {
+            background-color: #00ff66;
+            color: #0d0e12;
         }
-        .texto-resultado.vermelho { color: #dc3545; }
-        .texto-resultado.sucesso { color: #1a1a1a; }
     </style>
 </head>
 <body>
 
-    <div class="card" id="mainCard">
-        <p>Insira seu nome para enfrentar o sistema de defesa.</p>
-        <input type="text" id="nomeJogador" class="input-nome" placeholder="Digite seu nome" maxlength="15">
-        <div id="msgValidacao" class="msg-validacao">Somente letras são permitidas</div>
-        <button class="btn-principal" onclick="validarEIniciar()">Iniciar Partida</button>
+    <div class="card">
+        <div class="terminal-header">
+            <div class="dot r"></div>
+            <div class="dot y"></div>
+            <div class="dot g"></div>
+        </div>
+        
+        <div class="console" id="logConsole">
+            <div class="linha">> Inicializando protocolo de varredura...</div>
+        </div>
+
+        <div class="barra-progresso" id="barraContainer">
+            <div class="progresso" id="barraFill"></div>
+        </div>
+
+        <button id="btnSair" onclick="document.body.innerHTML='<h1 style=\'font-family:sans-serif;text-align:center;margin-top:40vh;color:#777;\'>Terminal Encerrado.</h1>';">FECHAR CONEXÃO</button>
     </div>
 
     <script>
-        let nomeSalvo = "";
-        let t = ["", "", "", "", "", "", "", "", ""];
-        let jogoAtivo = true;
+        const consoleElem = document.getElementById("logConsole");
+        const barraContainer = document.getElementById("barraContainer");
+        const barraFill = document.getElementById("barraFill");
+        const btnSair = document.getElementById("btnSair");
 
-        function validarEIniciar() {
-            const input = document.getElementById('nomeJogador');
-            const msg = document.getElementById('msgValidacao');
-            const texto = input.value.trim();
-            const apenasLetras = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
-
-            if (texto === "") {
-                msg.innerText = "Por favor, digite seu nome!";
-                msg.style.display = "block";
-                return;
-            }
-
-            if (!apenasLetras.test(texto)) {
-                msg.innerText = "Somente letras são permitidas";
-                msg.style.display = "block";
-                return;
-            }
-
-            msg.style.display = "none";
-            nomeSalvo = texto;
-            montarTabuleiro();
-        }
-
-        function montarTabuleiro() {
-            const card = document.getElementById('mainCard');
-            card.innerHTML = `
-                <h2>Sua vez, ${nomeSalvo} (X)</h2>
-                <p>Alinhe três símbolos para vencer o IGOR.</p>
-                <div class="tabuleiro">
-                    <div class="celula" onclick="jogada(0)" id="c0"></div>
-                    <div class="celula" onclick="jogada(1)" id="c1"></div>
-                    <div class="celula" onclick="jogada(2)" id="c2"></div>
-                    <div class="celula" onclick="jogada(3)" id="c3"></div>
-                    <div class="celula" onclick="jogada(4)" id="c4"></div>
-                    <div class="celula" onclick="jogada(5)" id="c5"></div>
-                    <div class="celula" onclick="jogada(6)" id="c6"></div>
-                    <div class="celula" onclick="jogada(7)" id="c7"></div>
-                    <div class="celula" onclick="jogada(8)" id="c8"></div>
-                </div>
-            `;
-        }
-
-        function jogada(index) {
-            if (t[index] !== "" || !jogoAtivo) return;
-
-            t[index] = "X";
-            document.getElementById(`c${index}`).innerText = "X";
-            document.getElementById(`c${index}`).classList.add('xis');
-
-            if (checarVitoria("X")) {
-                concluirJogo("vitoria");
-                return;
-            }
-
-            if (!t.includes("")) {
-                concluirJogo("empate");
-                return;
-            }
-
-            jogoAtivo = false;
-            setTimeout(jogadaBot, 350);
-        }
-
-        function jogadaBot() {
-            let escolha = -1;
-
-            // 1. Tentar vencer ou bloquear por varredura direta e por extenso
-            escolha = testarLinhagem("O"); // Inteligência busca vencer
-            if (escolha === -1) escolha = testarLinhagem("X"); // Inteligência busca bloquear você
-
-            // 2. Se não houver risco imediato, pega o centro
-            if (escolha === -1 && t[4] === "") escolha = 4;
-
-            // 3. Se o centro estiver ocupado, joga em qualquer canto vazio
-            if (escolha === -1) {
-                let cantos =;
-                let disponiveis = cantos.filter(i => t[i] === "");
-                if (disponiveis.length > 0) {
-                    escolha = disponiveis[Math.floor(Math.random() * disponiveis.length)];
-                }
-            }
-
-            // 4. Último caso: joga na primeira casa livre que encontrar
-            if (escolha === -1) {
-                let vazios = [];
-                t.forEach((v, i) => { if (v === "") vazios.push(i); });
-                escolha = vazios[Math.floor(Math.random() * vazios.length)];
-            }
-
-            t[escolha] = "O";
-            const elemento = document.getElementById(`c${escolha}`);
-            if (elemento) {
-                elemento.innerText = "O";
-                elemento.classList.add('bola');
-            }
-
-            if (checarVitoria("O")) {
-                concluirJogo("derrota");
-                return;
-            }
-
-            if (!t.includes("")) {
-                concluirJogo("empate");
-                return;
-            }
-
-            jogoAtivo = true;
-        }
-
-        // Função de verificação por extenso para garantir tolerância zero a falhas
-        function testarLinhagem(s) {
-            // Verifica Linhas Horizontais
-            if (t[0] === s && t[1] === s && t[2] === "") return 2;
-            if (t[0] === s && t[2] === s && t[1] === "") return 1;
-            if (t[1] === s && t[2] === s && t[0] === "") return 0;
-
-            if (t[3] === s && t[4] === s && t[5] === "") return 5;
-            if (t[3] === s && t[5] === s && t[4] === "") return 4;
-            if (t[4] === s && t[5] === s && t[3] === "") return 3;
-
-            if (t[6] === s && t[7] === s && t[8] === "") return 8;
-            if (t[6] === s && t[8] === s && t[7] === "") return 7;
-            if (t[7] === s && t[8] === s && t[6] === "") return 6;
-
-            // Verifica Colunas Verticais
-            if (t[0] === s && t[3] === s && t[6] === "") return 6;
-            if (t[0] === s && t[6] === s && t[3] === "") return 3;
-            if (t[3] === s && t[6] === s && t[0] === "") return 0;
-
-            if (t[1] === s && t[4] === s && t[7] === "") return 7;
-            if (t[1] === s && t[7] === s && t[4] === "") return 4;
-            if (t[4] === s && t[7] === s && t[1] === "") return 1;
-
-            if (t[2] === s && t[5] === s && t[8] === "") return 8;
-            if (t[2] === s && t[8] === s && t[5] === "") return 5;
-            if (t[5] === s && t[8] === s && t[2] === "") return 2;
-
-            // Verifica Diagonais Cruciais
-            if (t[0] === s && t[4] === s && t[8] === "") return 8;
-            if (t[0] === s && t[8] === s && t[4] === "") return 4;
-            if (t[4] === s && t[8] === s && t[0] === "") return 0;
-
-            if (t[2] === s && t[4] === s && t[6] === "") return 6;
-            if (t[2] === s && t[6] === s && t[4] === "") return 4;
-            if (t[4] === s && t[6] === s && t[2] === "") return 2;
-
-            return -1;
-        }
-
-        function checarVitoria(s) {
+        // Detecção real do ambiente do hardware da pessoa
+        const nCores = navigator.hardwareConcurrency || "N/A";
+        const ramEst = navigator.deviceMemory || "N/A";
         
+        const userAgent = navigator.userAgent;
+        let sistemaOperacional = "Mobile Device";
+        if (userAgent.match(/Android/i)) sistemaOperacional = "Android Subsystem";
+        else if (userAgent.match(/iPhone|iPad|iPod/i)) sistemaOperacional = "iOS Kernel";
+        else if (userAgent.match(/Windows/i)) sistemaOperacional = "Windows NT Core";
+
+        const scriptsLogs = [
+            { texto: "> Conectando ao proxy de rede mascarado...", tempo: 600 },
+            { texto: "> Estabelecendo handshake seguro...", tempo: 1200 },
+            { texto: `> Host identificado: [${sistemaOperacional}]`, tempo: 1800 },
+            { texto: `> Cores de Processamento ativos: ${nCores} Threads`, tempo: 2400 },
+            { texto: `> Arquitetura de Memória: ~${ramEst}GB RAM alocados`, tempo: 3000 },
+            { texto: "> Injetando payload de leitura na memória volatil...", tempo: 3600 },
+            { texto: "> Executando descriptografia de pacotes RSA-1024...", tempo: 4200 },
+            { texto: "> Sincronizando logs com o servidor central...", tempo: 4800 }
+        ];
+
+        scriptsLogs.forEach((log) => {
+            setTimeout(() => {
+                const novaLinha = document.createElement("div");
+                novaLinha.className = "linha";
+                novaLinha.innerText = log.texto;
+                consoleElem.appendChild(novaLinha);
+            }, log.tempo);
+        });
+
+        setTimeout(() => {
+            barraContainer.style.display = "block";
+            let porcentagem = 0;
+            
+            const intervaloProgresso = setInterval(() => {
+                porcentagem++;
+                barraFill.style.width = porcentagem + "%";
+                
+                if (porcentagem >= 100) {
+                    clearInterval(intervaloProgresso);
+                    exibirConclusao();
+                }
+            }, 30);
+        }, 5100);
+
+        function exibirConclusao() {
+            const finalLinha = document.createElement("div");
+            finalLinha.className = "linha";
+            finalLinha.style.color = "#ffffff";
+            finalLinha.style.fontWeight = "bold";
+            finalLinha.style.marginTop = "15px";
+            finalLinha.innerText = "\n[SUCESSO] OPERAÇÃO CONCLUÍDA.\nSTATUS: TERMINAL LOCKDOWN.";
+            consoleElem.appendChild(finalLinha);
+            
+            btnSair.style.display = "block";
+        }
+    </script>
+
+</body>
+</html>
