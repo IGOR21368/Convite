@@ -24,125 +24,158 @@
             touch-action: none;
         }
 
-        /* Container Principal do Jogo */
         #game-container {
             width: 100%;
             max-width: 450px;
             height: 100vh;
-            max-height: 850px;
-            background-color: #115511; /* Grama externa */
+            background-color: #115511;
             position: relative;
             overflow: hidden;
             border: 4px solid #444;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
         }
 
-        /* Placar Superior */
         #hud {
             position: absolute;
             top: 15px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.85);
             color: #fff;
-            padding: 10px 25px;
-            border-radius: 30px;
-            font-size: 16px;
+            padding: 10px;
+            border-radius: 20px;
+            font-size: 14px;
             text-align: center;
-            z-index: 10;
+            z-index: 30;
             border: 2px solid #ffcc00;
-            width: 80%;
+            width: 85%;
         }
         .hud-val { color: #ffcc00; }
 
-        /* Canvas da Estrada e Muros */
-        #road-canvas {
-            display: block;
+        /* Área Visual da Pista */
+        #screen-area {
             width: 100%;
-            height: 60%; /* Ocupa a parte superior */
-            background-color: #333;
+            height: 60%;
+            position: relative;
+            background-color: #2c3e50;
+            overflow: hidden;
         }
 
-        /* PAINEL DE CONTROLES VIRTUAIS (Inferior) */
+        /* Estrada Estilizada */
+        #road {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 100%;
+            background-color: #444;
+            border-left: 8px dashed #fff;
+            border-right: 8px dashed #fff;
+        }
+
+        /* Efeito de movimento das faixas nas curvas */
+        .road-moving {
+            animation: moveRoad 0.5s linear infinite;
+        }
+
+        @keyframes moveRoad {
+            0% { background-position-y: 0px; }
+            100% { background-position-y: 40px; }
+        }
+
+        /* Carro do Jogador */
+        #player-car {
+            width: 40px;
+            height: 65px;
+            background-color: #ffcc00;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 6px;
+            z-index: 10;
+            box-shadow: inset 0 5px 0 #997a00, 0 4px 8px rgba(0,0,0,0.4);
+            transition: left 0.05s linear;
+        }
+        #player-car::before {
+            content: '';
+            position: absolute;
+            top: 12px; left: 4px; width: 32px; height: 15px;
+            background: #222; border-radius: 4px;
+        }
+
+        /* Obstáculo */
+        #obstacle {
+            width: 35px;
+            height: 35px;
+            background-color: #e74c3c;
+            border: 4px solid #fff;
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9;
+            display: none;
+        }
+
+        /* Painel de Controles */
         #control-panel {
             width: 100%;
-            height: 40%; /* Ocupa a parte de baixo */
+            height: 40%;
             background: linear-gradient(to bottom, #2c3e50, #1a252f);
             border-top: 6px solid #ffcc00;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px;
-            position: relative;
+            z-index: 25;
         }
 
-        .control-group {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        /* Botão do Pedal (Acelerar) - Esquerda */
         #pedal-btn {
             width: 90px;
             height: 130px;
             background: linear-gradient(to bottom, #555, #222);
             border: 4px solid #888;
             border-radius: 15px 15px 5px 5px;
-            box-shadow: 0 8px 0 #111, 0 10px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 6px 0 #111;
             display: flex;
             justify-content: center;
             align-items: center;
             color: #ffcc00;
             font-size: 14px;
             font-weight: bold;
-            text-shadow: 1px 1px #000;
-        }
-        #pedal-btn:active {
-            transform: translateY(6px);
-            box-shadow: 0 2px 0 #111;
-            background: linear-gradient(to bottom, #333, #111);
         }
 
-        /* Botões de Seta (Direção) - Direita */
         .arrow-btn {
-            width: 85px;
-            height: 85px;
+            width: 80px;
+            height: 80px;
             background: linear-gradient(to bottom, #e74c3c, #c0392b);
             border: 3px solid #fff;
             border-radius: 50%;
-            box-shadow: 0 6px 0 #7f2d21, 0 8px 10px rgba(0,0,0,0.4);
+            box-shadow: 0 5px 0 #7f2d21;
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
-            font-size: 32px;
-        }
-        .arrow-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #7f2d21;
-            background: linear-gradient(to bottom, #c0392b, #962d22);
+            font-size: 30px;
         }
 
-        /* Telas de Menu Overlay */
+        /* Menus */
         #screen-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 60%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.9);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             color: #fff;
-            z-index: 20;
-            text-align: center;
-            padding: 20px;
+            z-index: 40;
         }
         #screen-overlay h1 {
             color: #ffcc00;
             font-size: 32px;
             margin-bottom: 20px;
-            text-shadow: 2px 2px #000;
         }
         #start-btn {
             font-size: 18px;
@@ -151,143 +184,141 @@
             padding: 12px 40px;
             border: none;
             border-radius: 30px;
-            cursor: pointer;
             font-weight: bold;
             box-shadow: 0 5px 0 #27ae60;
-            text-transform: uppercase;
-        }
-        #start-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 1px 0 #27ae60;
         }
     </style>
 </head>
 <body>
 
     <div id="game-container">
-        <!-- HUD Superior -->
         <div id="hud">
-            DISTÂNCIA: <span id="distance-val" class="hud-val">0m</span> | 
+            PONTOS: <span id="score-val" class="hud-val">0</span> | 
             VEL: <span id="speed-val" class="hud-val">0 km/h</span>
         </div>
 
-        <!-- Tela de Renderização Gráfica -->
-        <canvas id="road-canvas"></canvas>
+        <div id="screen-area">
+            <div id="road"></div>
+            <div id="player-car"></div>
+            <div id="obstacle"></div>
 
-        <!-- Menu Inicial Físico -->
-        <div id="screen-overlay">
-            <h1 id="menu-title">RETRO RACER</h1>
-            <button id="start-btn" onclick="startGame()">TOQUE PARA INICIAR</button>
+            <div id="screen-overlay">
+                <h1 id="menu-title">RETRO RACER</h1>
+                <button id="start-btn" onclick="startGameDirect()">TOQUE PARA INICIAR</button>
+            </div>
         </div>
 
-        <!-- Painel de Controles Físicos do Mobile -->
         <div id="control-panel">
-            <!-- Esquerda: Pedal de Aceleração -->
-            <div class="control-group">
-                <div id="pedal-btn">PEDAL</div>
+            <div>
+                <button id="pedal-btn">PEDAL</button>
             </div>
-            
-            <!-- Direita: Setas de Curva -->
-            <div class="control-group">
-                <div id="left-btn" class="arrow-btn">◀</div>
-                <div id="right-btn" class="arrow-btn">▶</div>
+            <div style="display: flex; gap: 15px;">
+                <button id="left-btn" class="arrow-btn">◀</button>
+                <button id="right-btn" class="arrow-btn">▶</button>
             </div>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('road-canvas');
-        const ctx = canvas.getContext('2d');
-        
         const overlay = document.getElementById('screen-overlay');
         const menuTitle = document.getElementById('menu-title');
         const startBtn = document.getElementById('start-btn');
-        const distanceVal = document.getElementById('distance-val');
+        const scoreVal = document.getElementById('score-val');
         const speedVal = document.getElementById('speed-val');
+        
+        const car = document.getElementById('player-car');
+        const obstacle = document.getElementById('obstacle');
+        const road = document.getElementById('road');
 
-        // Referência dos Botões
-        const pedalBtn = document.getElementById('pedal-btn');
-        const leftBtn = document.getElementById('left-btn');
-        const rightBtn = document.getElementById('right-btn');
+        const pedal = document.getElementById('pedal-btn');
+        const btnLeft = document.getElementById('left-btn');
+        const btnRight = document.getElementById('right-btn');
 
-        // Ajuste de Resolução Interna do Canvas
-        function resizeCanvas() {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        // Estados e Variáveis do Jogo
         let isPlaying = false;
-        let gameLoopInterval;
-        let distance = 0;
+        let loopInterval;
+        let score = 0;
         let speed = 0;
-        let maxSpeed = 120;
+        let carPos = 50; // Em porcentagem (50% = centro)
+        let obstacleY = -50;
+        let obstacleX = 50;
         
-        // Controles ativos
-        let keys = { accelerating: false, left: false, right: false };
+        let isAccelerating = false;
+        let isMovingLeft = false;
+        let isMovingRight = false;
 
-        // Parâmetros da Pista e do Carro
-        let playerX = 0; // Posição lateral do carro (-1 esquerda total, 1 direita total)
-        let trackPosition = 0; // Progresso na pista
-        let currentCurve = 0; // Curvatura atual da estrada
+        // Comandos de Toque Mobile Diretos
+        pedal.addEventListener('touchstart', (e) => { e.preventDefault(); isAccelerating = true; });
+        pedal.addEventListener('touchend', () => isAccelerating = false);
         
-        // Elementos de Cenário Embutidos
-        let obstacles = [];
-        let trackSegments = [];
-
-        // Inicializa mapa de curvas e retas randômicas
-        for(let i=0; i<500; i++) {
-            let curve = 0;
-            if (i > 30 && i < 100) curve = 0.5;   // Curva à direita
-            if (i > 150 && i < 220) curve = -0.6; // Curva à esquerda
-            if (i > 300 && i < 380) curve = 0.8;  // Curva acentuada direita
-            trackSegments.push(curve);
-        }
-
-        // Eventos Touch nos Controles Virtuais (Essencial para não falhar no celular)
-        pedalBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys.accelerating = true; });
-        pedalBtn.addEventListener('touchend', () => keys.accelerating = false);
+        btnLeft.addEventListener('touchstart', (e) => { e.preventDefault(); isMovingLeft = true; });
+        btnLeft.addEventListener('touchend', () => isMovingLeft = false);
         
-        leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys.left = true; });
-        leftBtn.addEventListener('touchend', () => keys.left = false);
-        
-        rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys.right = true; });
-        rightBtn.addEventListener('touchend', () => keys.right = false);
+        btnRight.addEventListener('touchstart', (e) => { e.preventDefault(); isMovingRight = true; });
+        btnRight.addEventListener('touchend', () => isMovingRight = false);
 
-        // Suporte para testes rápidos no computador (Teclado)
-        document.addEventListener('keydown', (e) => {
-            if(e.code === 'ArrowUp' || e.code === 'KeyW') keys.accelerating = true;
-            if(e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
-            if(e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
-        });
-        document.addEventListener('keyup', (e) => {
-            if(e.code === 'ArrowUp' || e.code === 'KeyW') keys.accelerating = false;
-            if(e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
-            if(e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
-        });
-
-        function startGame() {
+        function startGameDirect() {
             isPlaying = true;
-            distance = 0;
+            score = 0;
             speed = 0;
-            playerX = 0;
-            trackPosition = 0;
-            obstacles = [
-                { pos: 50, x: -0.3 },
-                { pos: 120, x: 0.4 },
-                { pos: 200, x: -0.5 },
-                { pos: 280, x: 0.2 },
-                { pos: 360, x: -0.2 },
-                { pos: 440, x: 0.5 }
-            ];
-
-            overlay.style.display = 'none';
-            resizeCanvas();
+            carPos = 50;
+            obstacleY = -50;
             
-            clearInterval(gameLoopInterval);
-            gameLoopInterval = setInterval(updateAndRender, 1000 / 60); // 60 FPS estável
+            car.style.left = '50%';
+            obstacle.style.display = 'block';
+            overlay.style.display = 'none';
+            
+            clearInterval(loopInterval);
+            loopInterval = setInterval(gameEngine, 20);
         }
 
+        function gameEngine() {
+            if (!isPlaying) return;
+
+            // Aceleração
+            if (isAccelerating) {
+                if (speed < 160) speed += 2;
+                score += 1;
+            } else {
+                if (speed > 0) speed -= 3;
+            }
+
+            // Movimento Lateral
+            if (speed > 10) {
+                if (isMovingLeft && carPos > 30) carPos -= 1.5;
+                if (isMovingRight && carPos < 70) carPos += 1.5;
+            }
+            car.style.left = carPos + '%';
+
+            scoreVal.innerText = score;
+            speedVal.innerText = speed + " km/h";
+
+            // Movimento do Obstáculo baseado na velocidade
+            if (speed > 0) {
+                obstacleY += (speed * 0.06);
+            }
+
+            // Reseta obstáculo se sair por baixo
+            if (obstacleY > 450) {
+                obstacleY = -50;
+                obstacleX = 35 + Math.random() * 30; // Gera posição aleatória na pista
+                obstacle.style.left = obstacleX + '%';
+            }
+            obstacle.style.top = obstacleY + 'px';
+
+            // Verificação Simplificada de Colisão
+            if (obstacleY > 300 && obstacleY < 370) {
+                if (Math.abs(carPos - obstacleX) < 8) {
+                    endGame();
+                }
+            }
+        }
+
+        function endGame() {
+            isPlaying = false;
+            clearInterval(loopInterval);
+            menuTitle.innerText = "FIM DE JOGO!";
+            startBtn.innerText = "TENTAR DE NOVO";
+            overlay.style.display = 'flex';
+            obstacle.style.display = 'none';
+        }
         
