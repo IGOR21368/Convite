@@ -147,10 +147,6 @@
         let tabuleiro = ["", "", "", "", "", "", "", "", ""];
         let jogoAtivo = true;
 
-        // Matriz de vitória restaurada com sucesso
-        const padroesVitoria = [, [3, 4, 5], [6, 7, 8], // Horizontais, [1, 4, 7], [2, 5, 8], // Verticais, [2, 4, 6]             // Diagonais
-        ];
-
         function validarEIniciar() {
             const input = document.getElementById('nomeJogador');
             const msg = document.getElementById('msgValidacao');
@@ -230,7 +226,7 @@
                 escolha = 4;
             }
 
-            // 4. Jogar nos cantos vazios
+            // 4. Jogar nos cantos vazios estrategicamente
             if (escolha === -1) {
                 const cantos =;
                 const cantosVazios = cantos.filter(i => tabuleiro[i] === "");
@@ -239,7 +235,7 @@
                 }
             }
 
-            // 5. Jogar em qualquer espaço
+            // 5. Jogar em qualquer espaço restante
             if (escolha === -1) {
                 let vazios = [];
                 tabuleiro.forEach((v, i) => { if (v === "") vazios.push(i); });
@@ -267,7 +263,11 @@
         }
 
         function buscarMelhorMovimento(simbolo) {
-            for (let padrao of padroesVitoria) {
+            // Varredura direta de linhas, colunas e diagonais para evitar matrizes apagadas pelo chat
+            const linhas = [, [3, 4, 5], [6, 7, 8], // Horizontais, [1, 4, 7], [2, 5, 8], // Verticais, [2, 4, 6]             // Diagonais
+            ];
+
+            for (let padrao of linhas) {
                 const marcas = padrao.map(i => tabuleiro[i]);
                 const contagemSimbolo = marcas.filter(m => m === simbolo).length;
                 const contagemVazio = marcas.filter(m => m === "").length;
@@ -280,7 +280,11 @@
         }
 
         function checarVitoria(s) {
-            return padroesVitoria.some(m => m.every(i => tabuleiro[i] === s));
+            const linhas = [, [3, 4, 5], [6, 7, 8],
+, [1, 4, 7], [2, 5, 8],
+, [2, 4, 6]
+            ];
+            return linhas.some(m => m.every(i => tabuleiro[i] === s));
         }
 
         function concluirJogo(res) {
@@ -298,12 +302,4 @@
             } else {
                 card.innerHTML = `
                     <div class="texto-resultado sucesso">Empate tático.</div>
-                    <button class="btn-reiniciar" onclick="reiniciar()">Reiniciar</button>
-                `;
-            }
-        }
-
-        function reiniciar() {
-            tabuleiro = ["", "", "", "", "", "", "", "", ""];
-            jogoAtivo = true;
-                
+        
