@@ -17,25 +17,24 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #ffffff;
+            background-color: #000000; /* Fundo Geral Preto Puro */
             padding: 20px;
         }
 
         .card {
-            background: #0d0e12;
+            background: #0d0e12; /* Cinza Grafite Escuro */
             padding: 30px 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            max-width: 400px;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+            max-width: 420px;
             width: 100%;
-            min-height: 380px;
+            min-height: 420px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
             text-align: left;
             border: 1px solid #1f242e;
-            position: relative;
         }
 
         .terminal-header {
@@ -44,7 +43,7 @@
             margin-bottom: 20px;
             width: 100%;
             border-bottom: 1px solid #1f242e;
-            padding-bottom: 10px;
+            padding-bottom: 12px;
         }
 
         .dot {
@@ -57,7 +56,6 @@
         .dot.g { background-color: #27c93f; }
 
         .console {
-            color: #00ff66;
             font-size: 13px;
             line-height: 1.6;
             width: 100%;
@@ -66,19 +64,27 @@
         }
 
         .linha {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             white-space: pre-wrap;
             word-wrap: break-word;
+            color: #d1d5db; /* Cor padrão cinza claro */
         }
+
+        /* Classes de Cores do Protótipo */
+        .c-verde { color: #00ff66; font-weight: bold; }
+        .c-ciano { color: #00f0ff; font-weight: bold; }
+        .c-alerta { color: #ff5555; font-weight: bold; }
+        .c-branco { color: #ffffff; }
 
         .barra-progresso {
             width: 100%;
-            background-color: #1a1d24;
-            height: 12px;
-            border-radius: 6px;
+            background-color: #161920;
+            height: 10px;
+            border-radius: 5px;
             margin-top: 15px;
             overflow: hidden;
             display: none;
+            border: 1px solid #1f242e;
         }
 
         .progresso {
@@ -91,21 +97,22 @@
         button {
             width: 100%;
             padding: 12px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             font-family: 'Courier New', Courier, monospace;
-            border: 1px solid #00ff66;
+            border: 1px solid #ff5555;
             border-radius: 8px;
             cursor: pointer;
             background-color: transparent;
-            color: #00ff66;
-            margin-top: 15px;
+            color: #ff5555;
+            margin-top: 20px;
             display: none;
+            letter-spacing: 1px;
             transition: all 0.2s ease;
         }
 
         button:active {
-            background-color: #00ff66;
+            background-color: #ff5555;
             color: #0d0e12;
         }
     </style>
@@ -120,14 +127,14 @@
         </div>
         
         <div class="console" id="logConsole">
-            <div class="linha">> Inicializando protocolo de varredura...</div>
+            <div class="linha"><span class="c-ciano">[SYS]</span> Inicializando terminal raiz...</div>
         </div>
 
         <div class="barra-progresso" id="barraContainer">
             <div class="progresso" id="barraFill"></div>
         </div>
 
-        <button id="btnSair" onclick="document.body.innerHTML='<h1 style=\'font-family:sans-serif;text-align:center;margin-top:40vh;color:#777;\'>Terminal Encerrado.</h1>';">FECHAR CONEXÃO</button>
+        <button id="btnSair" onclick="document.body.innerHTML='<h1 style=\'font-family:monospace;text-align:center;margin-top:45vh;color:#ff5555;\'>CONEXÃO ENCERRADA.</h1>';">FECHAR TERMINAL</button>
     </div>
 
     <script>
@@ -136,32 +143,32 @@
         const barraFill = document.getElementById("barraFill");
         const btnSair = document.getElementById("btnSair");
 
-        // Detecção real do ambiente do hardware da pessoa
-        const nCores = navigator.hardwareConcurrency || "N/A";
-        const ramEst = navigator.deviceMemory || "N/A";
+        const nCores = navigator.hardwareConcurrency || "4";
+        const ramEst = navigator.deviceMemory || "4";
         
         const userAgent = navigator.userAgent;
-        let sistemaOperacional = "Mobile Device";
-        if (userAgent.match(/Android/i)) sistemaOperacional = "Android Subsystem";
-        else if (userAgent.match(/iPhone|iPad|iPod/i)) sistemaOperacional = "iOS Kernel";
-        else if (userAgent.match(/Windows/i)) sistemaOperacional = "Windows NT Core";
+        let osKernel = "LINUX_CORE";
+        if (userAgent.match(/Android/i)) osKernel = "ANDROID_KERNEL";
+        else if (userAgent.match(/iPhone|iPad|iPod/i)) osKernel = "DARWIN_IOS_CORE";
+        else if (userAgent.match(/Windows/i)) osKernel = "WIN_NT_6.3";
 
+        // Linhas com jargões reais de segurança e camuflagem
         const scriptsLogs = [
-            { texto: "> Conectando ao proxy de rede mascarado...", tempo: 600 },
-            { texto: "> Estabelecendo handshake seguro...", tempo: 1200 },
-            { texto: `> Host identificado: [${sistemaOperacional}]`, tempo: 1800 },
-            { texto: `> Cores de Processamento ativos: ${nCores} Threads`, tempo: 2400 },
-            { texto: `> Arquitetura de Memória: ~${ramEst}GB RAM alocados`, tempo: 3000 },
-            { texto: "> Injetando payload de leitura na memória volatil...", tempo: 3600 },
-            { texto: "> Executando descriptografia de pacotes RSA-1024...", tempo: 4200 },
-            { texto: "> Sincronizando logs com o servidor central...", tempo: 4800 }
+            { html: '<span class="c-verde">[OK]</span> Conectando ao cluster de proxies ocultos...', tempo: 600 },
+            { html: '<span class="c-verde">[OK]</span> Handshake criptográfico SSL/TLS estabelecido.', tempo: 1200 },
+            { html: `<span class="c-ciano">[SYS]</span> Alvo mapeado: <span class="c-branco">${osKernel}</span>`, tempo: 1800 },
+            { html: `<span class="c-ciano">[SYS]</span> Hardware do host: <span class="c-branco">${nCores} Threads // ${ramEst}GB RAM</span>`, tempo: 2400 },
+            { html: '<span class="c-alerta">[ATTACK]</span> Executando varredura de portas TCP via SYN Flood...', tempo: 3000 },
+            { html: '<span class="c-alerta">[ATTACK]</span> Injetando shellcode binário estolado na memória...', tempo: 3600 },
+            { html: '<span class="c-verde">[OK]</span> Quebra de hash MD5 concluída com sucesso.', tempo: 4200 },
+            { html: '<span class="c-ciano">[SYS]</span> Executando bypass estrutural no Firewall de borda...', tempo: 4800 }
         ];
 
         scriptsLogs.forEach((log) => {
             setTimeout(() => {
                 const novaLinha = document.createElement("div");
                 novaLinha.className = "linha";
-                novaLinha.innerText = log.texto;
+                novaLinha.innerHTML = log.html;
                 consoleElem.appendChild(novaLinha);
             }, log.tempo);
         });
@@ -178,16 +185,14 @@
                     clearInterval(intervaloProgresso);
                     exibirConclusao();
                 }
-            }, 30);
+            }, 25);
         }, 5100);
 
         function exibirConclusao() {
             const finalLinha = document.createElement("div");
             finalLinha.className = "linha";
-            finalLinha.style.color = "#ffffff";
-            finalLinha.style.fontWeight = "bold";
             finalLinha.style.marginTop = "15px";
-            finalLinha.innerText = "\n[SUCESSO] OPERAÇÃO CONCLUÍDA.\nSTATUS: TERMINAL LOCKDOWN.";
+            finalLinha.innerHTML = '<span class="c-verde">[SUCCESS] SCRIPT EXECUTADO COM SUCESSO.</span>\n<span class="c-branco">STATUS INTERNO: LOCKDOWN COMPLETO.</span>';
             consoleElem.appendChild(finalLinha);
             
             btnSair.style.display = "block";
